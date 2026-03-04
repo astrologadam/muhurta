@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мухурта Калькулятор</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+#muh{font-family:'Noto Sans',sans-serif;background:#faf6ef;color:#1c100a;max-width:960px;margin:0 auto;padding:1.5rem 1rem;}
+#muh *{box-sizing:border-box;margin:0;padding:0;}
+#muh a{color:inherit;}
+/* HEADER */
+#muh .hdr{text-align:center;margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:2px solid rgba(180,140,60,.22);}
+#muh .hdr-logo{display:flex;justify-content:center;margin-bottom:.6rem;}
+#muh .hdr-logo svg{width:220px;height:auto;display:block;}
+#muh .hdr-t{font-family:'Libre Baskerville',serif;font-size:1.75rem;color:#6e2806;}
+#muh .hdr-s{color:#9e7840;font-size:.8rem;margin-top:.25rem;letter-spacing:.06em;}
+#muh .hdr-copy{color:#9e7840;font-size:.72rem;margin-top:.55rem;letter-spacing:.04em;opacity:.7;}
+#muh .day-card-header{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;width:100%;}
+#muh .day-detail{padding:.8rem 0 .3rem;border-top:1px solid rgba(180,140,60,.18);margin-top:.5rem;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+/* Calendar */
+#muh .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.5rem;}
+#muh .cal-head{text-align:center;font-size:.65rem;font-weight:700;color:#9e7840;padding:.25rem 0;text-transform:uppercase;letter-spacing:.05em;}
+#muh .cal-day{border-radius:8px;padding:.35rem .25rem;cursor:pointer;transition:all .15s;border:1px solid transparent;min-height:58px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+#muh .cal-day:hover{border-color:rgba(180,140,60,.4);transform:translateY(-1px);}
+#muh .cal-day.sel{border-color:#c8600a;box-shadow:0 2px 8px rgba(200,96,10,.25);}
+#muh .cal-day.empty{background:none;cursor:default;}
+#muh .cal-day.empty:hover{border-color:transparent;transform:none;}
+#muh .cal-num{font-size:.72rem;font-weight:700;color:#6e2806;}
+#muh .cal-nak{font-size:.52rem;color:#9e7840;text-align:center;line-height:1.2;}
+#muh .cal-ls{font-size:.5rem;color:#9e7840;}
+#muh .cal-dot{width:6px;height:6px;border-radius:50%;margin-top:1px;}
+#muh .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
+#muh .cal-nav button{background:none;border:1px solid rgba(180,140,60,.3);border-radius:6px;padding:.3rem .7rem;cursor:pointer;color:#6e2806;font-size:.8rem;}
+#muh .cal-nav button:hover{background:rgba(180,140,60,.1);}
+#muh .cal-legend{display:flex;gap:.8rem;flex-wrap:wrap;font-size:.65rem;color:#9e7840;margin-top:.5rem;}
+#muh .cal-legend span{display:flex;align-items:center;gap:.25rem;}
+/* Energy of day panel */
+#muh .energy-panel{background:#faf6ef;border:1px solid rgba(180,140,60,.22);border-radius:12px;padding:1rem 1.1rem;margin-bottom:1rem;}
+#muh .energy-tabs{display:flex;gap:.4rem;margin-bottom:.85rem;border-bottom:1px solid rgba(180,140,60,.18);padding-bottom:.6rem;}
+#muh .etab{background:none;border:none;font-family:inherit;font-size:.78rem;padding:.3rem .7rem;border-radius:6px;cursor:pointer;color:#9e7840;transition:background .15s,color .15s;}
+#muh .etab.on{background:#6e2806;color:#fff;font-weight:600;}
+/* Filter UI */
+#muh .filter-toggle{display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.78rem;color:#9e7840;padding:.3rem 0;user-select:none;}
+#muh .filter-toggle:hover{color:#6e2806;}
+#muh .filter-panel{background:#faf6ef;border:1px solid rgba(180,140,60,.2);border-radius:10px;padding:.85rem 1rem;margin-top:.5rem;}
+#muh .filter-section{margin-bottom:.8rem;}
+#muh .filter-section:last-child{margin-bottom:0;}
+#muh .filter-lbl{font-size:.7rem;font-weight:700;color:#6e2806;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;}
+#muh .ftag{display:inline-flex;align-items:center;font-size:.68rem;padding:.2rem .5rem;border-radius:4px;border:1px solid rgba(180,140,60,.3);background:#fff;color:#6e2806;cursor:pointer;margin:.15rem;transition:all .15s;}
+#muh .ftag.on{background:#6e2806;color:#fff;border-color:#6e2806;}
+#muh .ftag-bad.on{background:#8a1a1e;border-color:#8a1a1e;color:#fff;}
+#muh .filter-clear{font-size:.7rem;color:#9e7840;cursor:pointer;text-decoration:underline;margin-left:.5rem;}
+#muh .filter-clear:hover{color:#6e2806;}
+/* CARD */
+#muh .card{background:#fff;border:1px solid rgba(180,140,60,.22);border-radius:11px;padding:1.2rem;box-shadow:0 2px 10px rgba(180,140,60,.07);margin-bottom:.85rem;}
+#muh .ct{font-family:'Libre Baskerville',serif;font-size:.9rem;color:#6e2806;margin-bottom:.75rem;display:flex;align-items:center;gap:.45rem;}
+#muh .ct::after{content:"";flex:1;height:1px;background:rgba(180,140,60,.22);}
+/* CATEGORIES */
+#muh .catg{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;}
+#muh .catb{background:#faf6ef;border:1.5px solid rgba(180,140,60,.22);border-radius:9px;padding:.75rem .45rem;cursor:pointer;text-align:center;transition:all .18s;position:relative;user-select:none;}
+#muh .catb:hover,#muh .catb.on{border-color:#c8600a;background:#fdf4e3;box-shadow:0 0 0 3px rgba(200,96,10,.1);}
+#muh .catb-icon{font-size:1.4rem;display:block;margin-bottom:.22rem;}
+#muh .catb-lbl{font-size:.71rem;color:#6a4820;font-weight:500;line-height:1.3;}
+#muh .cat-chk{position:absolute;top:.35rem;right:.35rem;width:15px;height:15px;background:#c8600a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;color:#fff;}
+/* EVENT LIST */
+#muh .evlist{display:flex;flex-direction:column;gap:.45rem;}
+#muh .evb{background:#faf6ef;border:1.5px solid rgba(180,140,60,.22);border-radius:8px;padding:.65rem 1rem;cursor:pointer;text-align:left;font-family:'Noto Sans',sans-serif;font-size:.84rem;color:#6a4820;font-weight:500;transition:all .18s;width:100%;}
+#muh .evb:hover,#muh .evb.on{border-color:#c8600a;background:#fdf4e3;color:#6e2806;}
+#muh .ev-note{background:linear-gradient(135deg,#fef8ec,#f5ede0);border:1px solid rgba(200,96,10,.15);border-radius:7px;padding:.65rem .85rem;font-size:.77rem;color:#6a4820;line-height:1.55;margin-top:.5rem;}
+#muh .ev-note strong{color:#6e2806;display:block;margin-bottom:.2rem;}
+/* CUSTOM BUILDER */
+#muh .qual-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem;}
+#muh .qc{background:#faf6ef;border:1.5px solid rgba(180,140,60,.22);border-radius:7px;padding:.55rem .75rem;cursor:pointer;display:flex;align-items:flex-start;gap:.5rem;transition:all .18s;user-select:none;}
+#muh .qc.on{border-color:#c8600a;background:#fdf4e3;}
+#muh .qbox{width:15px;height:15px;min-width:15px;border:1.5px solid rgba(180,140,60,.4);border-radius:3px;margin-top:.1rem;display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:all .18s;}
+#muh .qc.on .qbox{background:#c8600a;border-color:#c8600a;color:#fff;}
+#muh .qtext{font-size:.76rem;color:#6a4820;line-height:1.4;}
+#muh .qc.on .qtext{color:#6e2806;}
+#muh .vara-row{display:flex;gap:.38rem;flex-wrap:wrap;margin-bottom:.6rem;}
+#muh .vchip{background:#faf6ef;border:1.5px solid rgba(180,140,60,.22);border-radius:99px;padding:.26rem .65rem;cursor:pointer;font-size:.74rem;font-weight:600;transition:all .18s;user-select:none;}
+/* MODE TOGGLE */
+#muh .mode-tabs{display:flex;gap:0;background:#f3ead6;border-radius:8px;padding:3px;margin-bottom:.8rem;}
+#muh .mode-tab{flex:1;padding:.52rem;text-align:center;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;color:#9e7840;transition:all .18s;border:none;background:none;font-family:'Noto Sans',sans-serif;}
+#muh .mode-tab.on{background:#fff;color:#6e2806;box-shadow:0 1px 4px rgba(180,140,60,.15);}
+/* FORM */
+#muh .fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;}
+#muh .fld{display:flex;flex-direction:column;gap:.26rem;}
+#muh .lbl{font-size:.67rem;text-transform:uppercase;letter-spacing:.08em;color:#9e7840;font-weight:600;}
+#muh .inp{background:#faf6ef;border:1px solid rgba(180,140,60,.22);border-radius:7px;padding:.5rem .75rem;color:#1c100a;font-family:'Noto Sans',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;width:100%;}
+#muh .inp:focus{border-color:#c8600a;}
+#muh select.inp option{background:#faf6ef;}
+/* PRESETS */
+#muh .presets{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem;align-items:center;}
+#muh .preset{background:#faf6ef;border:1px solid rgba(180,140,60,.22);border-radius:99px;padding:.26rem .72rem;cursor:pointer;font-size:.75rem;color:#6a4820;transition:all .18s;font-family:'Noto Sans',sans-serif;border:1px solid rgba(180,140,60,.22);}
+#muh .preset:hover{border-color:#c8600a;color:#6e2806;}
+#muh .preset-lbl{font-size:.72rem;color:#9e7840;}
+/* PROGRESS */
+#muh .prog-wrap{background:#e8ddc5;border-radius:99px;height:4px;overflow:hidden;margin-top:.3rem;}
+#muh .prog-fill{height:100%;background:linear-gradient(90deg,#c8600a,#6e2806);border-radius:99px;transition:width .3s;}
+/* BUTTON */
+#muh .btn-m{display:block;width:100%;padding:.62rem 1.4rem;border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans',sans-serif;font-weight:700;font-size:.88rem;background:linear-gradient(135deg,#c8600a,#6e2806);color:#fff;margin-top:.45rem;transition:all .2s;letter-spacing:.02em;}
+#muh .btn-m:hover:not(:disabled){opacity:.9;transform:translateY(-1px);box-shadow:0 4px 14px rgba(200,96,10,.28);}
+#muh .btn-m:disabled{opacity:.55;cursor:wait;}
+/* PANCHANGA */
+#muh .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem;}
+#muh .pk{background:#faf6ef;border:1px solid rgba(180,140,60,.22);border-radius:7px;padding:.6rem .5rem;text-align:center;}
+#muh .pk-l{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:#9e7840;margin-bottom:.18rem;}
+#muh .pk-v{font-family:'Libre Baskerville',serif;font-size:.83rem;color:#6e2806;font-weight:700;line-height:1.3;}
+#muh .pk-s{font-size:.6rem;color:#9e7840;margin-top:.1rem;}
+#muh .nkd{background:linear-gradient(135deg,#fef8ec,#f5ede0);border:1px solid rgba(180,140,60,.22);border-radius:9px;padding:.8rem;display:flex;gap:.8rem;align-items:flex-start;margin-top:.65rem;}
+#muh .nk-name{font-family:'Libre Baskerville',serif;font-size:1rem;color:#6e2806;}
+#muh .nk-meta{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:.25rem;}
+#muh .nkb{font-size:.66rem;background:rgba(200,96,10,.09);color:#6e2806;border-radius:4px;padding:.1rem .36rem;}
+/* SCORE */
+#muh .scw{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;}
+#muh .scc{position:relative;flex-shrink:0;}
+#muh .scc svg{display:block;}
+#muh .scn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;}
+#muh .scb{font-size:1.65rem;font-weight:700;line-height:1;}
+#muh .scl{font-size:.6rem;color:#9e7840;text-transform:uppercase;letter-spacing:.05em;}
+#muh .scrs{flex:1;min-width:160px;}
+#muh .scr{display:flex;justify-content:space-between;padding:.28rem 0;border-bottom:1px solid rgba(180,140,60,.22);font-size:.78rem;}
+#muh .scr:last-child{border-bottom:none;}
+/* TIMELINE */
+#muh .tlb{display:flex;height:28px;border-radius:5px;overflow:hidden;border:1px solid rgba(180,140,60,.22);margin-top:.4rem;position:relative;}
+#muh .tls{flex:1;position:relative;cursor:pointer;}
+#muh .tls:hover{filter:brightness(1.1);}
+#muh .tlt{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);background:#1c100a;color:#fff;font-size:.63rem;padding:.22rem .46rem;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none;opacity:0;transition:opacity .15s;}
+#muh .tls:hover .tlt{opacity:1;}
+#muh .tll{display:flex;justify-content:space-between;font-size:.62rem;color:#9e7840;margin-top:.25rem;}
+/* PERIODS */
+#muh .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;}
+#muh .inaus{background:#fff4f4;border:1px solid rgba(138,26,30,.16);border-radius:7px;padding:.65rem;text-align:center;}
+#muh .in-l{font-size:.66rem;color:#8a1a1e;font-weight:700;margin-bottom:.18rem;}
+#muh .in-t{font-family:'Libre Baskerville',serif;font-size:.88rem;color:#1c100a;}
+#muh .in-n{font-size:.63rem;color:#9e7840;margin-top:.12rem;}
+#muh .good-p{background:#f0fff7;border-color:rgba(30,107,61,.2);}
+#muh .good-p .in-l{color:#1e6b3d;}
+/* RANGE RESULTS */
+#muh .range-top{margin-bottom:.6rem;font-size:.8rem;color:#9e7840;}
+#muh .day-cards{display:flex;flex-direction:column;gap:.55rem;}
+#muh .day-card{border:1.5px solid rgba(180,140,60,.22);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .18s;background:#fff;}
+#muh .day-card:hover{border-color:#c8600a;box-shadow:0 2px 10px rgba(180,140,60,.12);}
+#muh .day-card.sel{border-color:#c8600a;background:#fdf4e2;}
+#muh .day-rank{font-family:'Libre Baskerville',serif;font-size:1.2rem;font-weight:700;color:rgba(180,140,60,.4);min-width:1.8rem;text-align:center;}
+#muh .day-rank.top{color:#c8600a;}
+#muh .day-date{font-family:'Libre Baskerville',serif;font-size:.92rem;color:#1c100a;font-weight:700;}
+#muh .day-sub{font-size:.72rem;color:#9e7840;margin-top:.1rem;}
+#muh .day-score-num{font-family:'Libre Baskerville',serif;font-size:1.35rem;font-weight:700;}
+#muh .day-score-lbl{font-size:.66rem;color:#9e7840;text-align:right;}
+#muh .day-tags{display:flex;gap:.28rem;flex-wrap:wrap;margin-top:.3rem;}
+#muh .dtag{font-size:.63rem;padding:.07rem .32rem;border-radius:3px;background:rgba(200,96,10,.08);color:#6e2806;}
+/* BEST SLOTS */
+#muh .slg{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+#muh .slot{background:#faf6ef;border:1.5px solid rgba(180,140,60,.22);border-radius:9px;padding:.75rem;transition:all .18s;}
+#muh .sl-top{font-size:.6rem;font-weight:700;letter-spacing:.06em;color:#c8600a;margin-bottom:.18rem;}
+#muh .sl-t{font-family:'Libre Baskerville',serif;font-size:.98rem;color:#1c100a;font-weight:700;}
+#muh .sl-s{font-size:.71rem;font-weight:600;margin-top:.12rem;}
+#muh .sl-tags{margin-top:.35rem;display:flex;flex-wrap:wrap;gap:.2rem;}
+#muh .stag{font-size:.61rem;background:rgba(200,96,10,.08);color:#6e2806;border-radius:3px;padding:.07rem .32rem;}
+/* MISC */
+#muh .srrow{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.76rem;color:#6a4820;background:#f3ead6;border-radius:7px;padding:.48rem .8rem;border:1px solid rgba(180,140,60,.22);margin-bottom:.7rem;}
+#muh .srit{display:flex;align-items:center;gap:.25rem;}
+#muh .warn{background:#fff4f4;border:1px solid rgba(138,26,30,.25);border-radius:7px;padding:.7rem .85rem;font-size:.8rem;color:#8a1a1e;}
+#muh .warn strong{display:block;margin-bottom:.18rem;font-size:.83rem;}
+#muh .orn{text-align:center;color:#c8600a;letter-spacing:.5em;margin:.9rem 0;opacity:.4;font-size:.85rem;}
+#muh hr.dv{border:none;border-top:1px solid rgba(180,140,60,.22);margin:.8rem 0;}
+#muh .mt1{margin-top:.5rem;}
+#muh .mt2{margin-top:1rem;}
+#muh .name-inp{background:#faf6ef;border:1px solid rgba(180,140,60,.22);border-radius:7px;padding:.5rem .75rem;color:#1c100a;font-family:'Noto Sans',sans-serif;font-size:.86rem;outline:none;width:100%;transition:border-color .2s;}
+#muh .name-inp:focus{border-color:#c8600a;}
+/* RESPONSIVE */
+@media(max-width:640px){
+  #muh .catg{grid-template-columns:repeat(3,1fr);}
+  #muh .fg3{grid-template-columns:1fr 1fr;}
+  #muh .g5{grid-template-columns:repeat(3,1fr);}
+  #muh .slg{grid-template-columns:1fr;}
+  #muh .day-card{flex-wrap:wrap;}
+  #muh .qual-grid{grid-template-columns:1fr;}
+}
+@media(max-width:400px){
+  #muh .catg{grid-template-columns:repeat(2,1fr);}
+  #muh .g3{grid-template-columns:1fr 1fr;}
+  #muh .fg3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="muh"></div>
+
+<div id="muh-logo-src" style="display:none">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="260" height="130" viewBox="0 0 1500 750"
+ preserveAspectRatio="xMidYMid meet">
+<g transform="translate(0,750) scale(0.1,-0.1)" fill="#6e2806" stroke="none">
+<path d="M3227 5538 c-2 -7 -27 -71 -55 -143 -28 -71 -60 -154 -71 -182 l-21
+-53 23 0 c18 0 27 11 45 60 l24 60 78 0 79 0 22 -60 c18 -50 26 -60 45 -60
+l24 0 -20 53 c-107 285 -128 332 -147 335 -11 2 -23 -3 -26 -10z m80 -200 c5
+-16 -2 -18 -56 -18 -33 0 -61 2 -61 4 0 2 11 35 25 72 14 38 28 76 31 84 5 12
+39 -67 61 -142z"/>
+<path d="M7477 5538 c-2 -7 -27 -71 -55 -143 -28 -71 -60 -154 -71 -182 l-21
+-53 23 0 c18 0 27 11 45 60 l24 60 78 0 79 0 22 -60 c18 -50 26 -60 45 -60
+l24 0 -20 53 c-107 285 -128 332 -147 335 -11 2 -23 -3 -26 -10z m80 -200 c5
+-16 -2 -18 -56 -18 -33 0 -61 2 -61 4 0 2 11 35 25 72 14 38 28 76 31 84 5 12
+39 -67 61 -142z"/>
+<path d="M3640 5305 c0 -138 1 -145 20 -145 18 0 20 7 20 73 l1 72 65 -72 c49
+-54 73 -73 91 -73 23 0 20 6 -42 76 l-68 75 34 37 c19 20 47 52 64 70 l29 32
+-25 0 c-18 0 -41 -19 -87 -71 l-62 -70 0 70 c0 64 -2 71 -20 71 -19 0 -20 -7
+-20 -145z"/>
+<path d="M4122 5439 c-27 -10 -24 -35 4 -31 10 1 35 5 55 8 43 7 69 -14 69
+-56 0 -27 -2 -28 -60 -32 -80 -6 -114 -30 -118 -86 -4 -57 22 -82 87 -82 34 0
+56 6 75 21 l26 20 0 -20 c0 -12 6 -21 15 -21 13 0 15 21 15 125 0 152 -8 165
+-92 164 -29 0 -64 -4 -76 -10z m128 -173 c0 -58 -67 -94 -121 -66 -19 11 -25
+45 -11 66 14 21 47 33 90 34 41 0 42 -1 42 -34z"/>
+<path d="M4612 5377 c-15 -85 -54 -177 -77 -177 -12 0 -15 -14 -15 -70 0 -63
+2 -70 20 -70 17 0 20 7 20 50 l0 50 105 0 105 0 0 -50 c0 -43 3 -50 20 -50 18
+0 20 7 20 70 0 63 -2 70 -20 70 -19 0 -20 7 -20 125 l0 125 -73 0 -73 0 -12
+-73z m116 -69 l3 -108 -69 0 -69 0 18 38 c16 34 29 77 44 155 5 25 10 28 38
+25 l32 -3 3 -107z"/>
+<path d="M5075 5428 c-15 -12 -34 -36 -41 -54 -28 -68 -10 -152 41 -192 21
+-17 41 -22 86 -22 71 0 89 6 89 32 0 15 -4 18 -17 13 -85 -32 -163 -1 -163 67
+l0 28 95 0 95 0 0 36 c0 71 -41 113 -111 114 -33 0 -54 -6 -74 -22z m120 -33
+c14 -13 25 -33 25 -45 0 -18 -6 -20 -75 -20 -69 0 -75 2 -75 20 0 29 44 70 75
+70 14 0 37 -11 50 -25z"/>
+<path d="M5520 5305 c0 -122 2 -145 15 -145 12 0 15 19 15 112 0 69 4 108 9
+103 5 -6 27 -55 49 -110 55 -139 64 -138 124 7 l47 113 1 -112 c0 -106 1 -113
+20 -113 19 0 20 7 20 145 l0 145 -28 0 c-27 0 -31 -6 -72 -110 -24 -61 -46
+-113 -50 -115 -3 -2 -26 48 -50 111 -42 107 -47 114 -72 114 l-28 0 0 -145z"/>
+<path d="M6080 5304 l0 -145 27 3 c22 2 40 24 102 122 l76 118 3 -121 c2 -113
+4 -121 22 -121 19 0 20 7 20 145 l0 145 -29 0 c-25 0 -36 -12 -102 -116 -40
+-63 -76 -117 -79 -119 -3 -2 -4 50 -2 116 3 114 2 119 -17 119 -20 0 -21 -5
+-21 -146z"/>
+<path d="M6630 5443 c-35 -13 -50 -37 -50 -79 0 -36 5 -47 29 -65 l30 -22 -40
+-58 c-40 -59 -40 -59 -15 -59 20 0 34 14 66 60 37 54 44 60 75 60 l35 0 0 -60
+c0 -53 2 -60 20 -60 19 0 20 7 20 145 l0 145 -77 -1 c-43 0 -85 -3 -93 -6z
+m130 -83 l0 -50 -44 0 c-68 0 -96 14 -96 48 0 41 17 52 82 52 l58 0 0 -50z"/>
+<path d="M7921 5425 c-38 -33 -55 -84 -48 -146 10 -84 48 -119 132 -119 56 0
+75 8 75 30 0 16 -4 17 -36 9 -79 -22 -126 14 -127 100 -1 84 49 131 118 112
+27 -7 35 -6 39 6 10 26 -4 33 -64 33 -48 0 -64 -5 -89 -25z"/>
+<path d="M8280 5430 c0 -17 7 -20 50 -20 l50 0 0 -125 c0 -118 1 -125 20 -125
+19 0 20 7 20 125 l0 125 45 0 c38 0 45 3 45 20 0 19 -7 20 -115 20 -108 0
+-115 -1 -115 -20z"/>
+<path d="M8740 5240 c0 -203 1 -210 20 -210 18 0 20 7 20 81 l0 80 22 -15 c29
+-21 107 -20 137 0 31 22 51 73 51 129 0 56 -20 107 -51 129 -35 24 -107 21
+-136 -6 l-24 -22 -6 22 c-3 12 -12 22 -19 22 -12 0 -14 -38 -14 -210z m174
+157 c29 -29 40 -85 26 -136 -15 -58 -63 -85 -115 -65 -60 23 -58 201 2 217 40
+10 65 6 87 -16z"/>
+<path d="M9275 5428 c-51 -40 -69 -124 -41 -192 21 -52 60 -76 120 -76 86 0
+126 46 126 145 0 67 -20 109 -60 130 -43 22 -112 19 -145 -7z m132 -32 c25
+-22 28 -30 28 -91 0 -61 -3 -69 -28 -91 -54 -46 -121 -22 -137 50 -15 66 4
+130 43 146 38 15 65 11 94 -14z"/>
+<path d="M9780 5408 c0 -63 -27 -178 -46 -199 -10 -11 -23 -19 -31 -19 -7 0
+-13 -7 -13 -16 0 -11 8 -14 32 -12 47 5 67 41 86 152 l15 96 44 0 43 0 0 -125
+c0 -118 1 -125 20 -125 19 0 20 7 20 145 l0 145 -85 0 -85 0 0 -42z"/>
+<path d="M10245 5428 c-51 -40 -69 -124 -41 -192 21 -52 60 -76 120 -76 86 0
+126 46 126 145 0 67 -20 109 -60 130 -43 22 -112 19 -145 -7z m132 -32 c25
+-22 28 -30 28 -91 0 -61 -3 -69 -28 -91 -54 -46 -121 -22 -137 50 -15 66 4
+130 43 146 38 15 65 11 94 -14z"/>
+<path d="M10710 5305 c0 -138 1 -145 20 -145 19 0 20 7 20 125 l0 125 65 0
+c58 0 65 2 65 20 0 18 -7 20 -85 20 l-85 0 0 -145z"/>
+<path d="M11110 5304 l0 -145 27 3 c22 2 40 24 102 122 l76 118 3 -121 c2
+-113 4 -121 22 -121 19 0 20 7 20 145 l0 145 -29 0 c-25 0 -36 -12 -102 -116
+-40 -63 -76 -117 -79 -119 -3 -2 -4 50 -2 116 3 114 2 119 -17 119 -20 0 -21
+-5 -21 -146z"/>
+<path d="M11630 5304 l0 -145 27 3 c22 2 40 24 102 122 l76 118 3 -121 c2
+-113 4 -121 22 -121 19 0 20 7 20 145 l0 145 -29 0 c-25 0 -36 -12 -102 -116
+-40 -63 -76 -117 -79 -119 -3 -2 -4 50 -2 116 3 114 2 119 -17 119 -20 0 -21
+-5 -21 -146z"/>
+<path d="M7565 4592 c-209 -116 -390 -302 -489 -505 -31 -63 -29 -88 10 -106
+35 -16 66 5 95 62 90 176 333 427 414 427 49 0 53 -10 206 -576 82 -302 149
+-566 149 -586 0 -30 -4 -38 -18 -38 -10 0 -234 170 -499 378 -264 208 -497
+386 -517 396 -49 23 -73 14 -87 -33 -18 -62 -3 -91 67 -126 32 -17 273 -194
+534 -394 261 -199 489 -369 507 -377 44 -19 127 -18 147 2 30 30 30 65 -2 199
+-35 147 -307 1183 -323 1232 -25 76 -105 94 -194 45z"/>
+<path d="M3050 4592 c0 -43 912 -932 956 -932 7 0 41 23 76 51 80 66 878 863
+878 878 0 7 -38 11 -117 10 l-118 0 -44 -52 c-50 -60 -672 -687 -681 -687 -3
+0 -172 167 -375 370 l-369 370 -103 0 c-57 0 -103 -4 -103 -8z"/>
+<path d="M5602 4558 c-39 -58 -277 -494 -409 -753 -118 -230 -162 -329 -152
+-340 16 -16 1224 -14 1240 2 10 10 -2 43 -60 160 -132 269 -391 739 -484 881
+-72 109 -90 116 -135 50z m140 -220 c36 -68 90 -168 118 -223 29 -55 81 -152
+115 -215 102 -187 186 -360 181 -369 -17 -27 -996 -23 -996 4 0 12 93 199 263
+525 172 332 213 400 242 400 6 0 41 -55 77 -122z"/>
+<path d="M4814 4192 c-95 -79 -596 -608 -728 -770 -33 -39 -65 -72 -70 -71 -6
+1 -42 35 -81 78 -182 200 -543 575 -631 657 -126 115 -174 148 -191 131 -28
+-28 -35 -179 -40 -852 -6 -789 6 -1078 45 -1117 27 -27 160 93 440 397 283
+307 396 425 421 442 24 16 26 14 450 -416 297 -300 432 -431 447 -431 19 0 22
+7 28 78 10 127 25 600 31 1047 9 570 -8 858 -51 872 -7 2 -38 -18 -70 -45z
+m-4 -954 l-1 -793 -62 66 c-34 37 -136 145 -226 240 -224 236 -421 469 -421
+495 0 4 45 53 99 109 111 116 382 419 511 573 47 55 88 101 93 101 4 1 7 -356
+7 -791z m-1354 520 c125 -139 282 -308 347 -375 70 -71 117 -127 114 -135 -8
+-21 -152 -189 -303 -355 -188 -206 -387 -417 -396 -421 -5 -2 -8 343 -8 767 0
+443 4 771 9 771 5 0 111 -114 237 -252z"/>
+<path d="M8190 4151 c-14 -4 -31 -18 -39 -32 -13 -23 -12 -30 5 -65 10 -21 34
+-47 52 -58 l33 -19 92 29 c101 31 233 38 274 16 52 -28 53 -40 53 -477 0 -392
+1 -406 20 -425 24 -24 96 -27 125 -6 18 13 19 17 5 73 -19 75 -27 718 -10 775
+24 83 165 99 338 38 67 -24 99 -19 136 19 37 39 44 90 16 116 -21 19 -33 20
+-204 15 -247 -7 -508 -6 -706 1 -91 4 -176 4 -190 0z"/>
+<path d="M9602 4153 c-30 -6 -46 -33 -144 -248 -103 -228 -128 -306 -135 -420
+-12 -199 75 -329 247 -369 49 -12 127 -16 323 -16 l259 0 -7 -102 c-12 -170
+-38 -305 -74 -376 -41 -81 -101 -147 -166 -180 -43 -22 -65 -27 -160 -30 -102
+-3 -118 -1 -230 32 -108 31 -122 33 -142 21 -42 -28 -42 -140 0 -170 18 -12
+61 -15 247 -15 243 0 297 8 396 56 95 45 180 186 220 364 36 161 44 300 44
+823 0 415 2 485 17 538 15 56 15 61 -1 77 -11 11 -33 17 -65 17 -86 0 -81 28
+-81 -446 0 -249 -4 -428 -10 -444 -16 -43 -48 -49 -276 -49 l-210 -1 -59 30
+c-40 20 -69 45 -90 73 -27 39 -30 53 -33 133 -3 73 1 105 22 179 32 113 141
+358 189 429 40 58 46 85 21 95 -17 6 -65 6 -102 -1z"/>
+<path d="M10873 4135 c-67 -31 -219 -176 -279 -266 -102 -155 -164 -315 -189
+-489 -24 -178 -17 -247 31 -268 33 -16 76 -15 99 2 17 12 17 18 6 91 -28 174
+15 359 130 556 68 117 224 269 249 242 13 -13 147 -335 160 -381 20 -76 31
+-91 72 -103 32 -8 44 -7 64 6 32 21 32 66 -2 139 l-26 57 34 55 c33 56 125
+153 186 198 35 25 91 52 95 45 10 -14 249 -774 257 -817 16 -87 30 -102 94
+-102 39 0 56 15 56 52 0 22 -230 754 -297 946 -20 57 -42 68 -109 53 -74 -17
+-189 -95 -292 -197 -46 -47 -86 -84 -87 -82 -8 9 -47 94 -75 163 -34 85 -67
+125 -103 125 -12 0 -46 -11 -74 -25z"/>
+<path d="M6948 3759 c-20 -11 -49 -102 -75 -234 -25 -127 -25 -462 0 -595 39
+-210 127 -416 244 -571 82 -109 121 -135 181 -124 50 9 72 31 72 72 0 30 -13
+48 -100 139 -164 170 -235 300 -277 511 -27 134 -24 421 6 568 34 169 37 202
+16 225 -20 22 -41 25 -67 9z"/>
+<path d="M5080 3302 c0 -10 97 -103 323 -312 92 -85 167 -159 167 -166 0 -6
+-97 -107 -216 -225 -277 -274 -319 -318 -319 -332 0 -7 14 -15 30 -18 17 -4
+294 -7 616 -8 497 -1 588 1 605 14 18 13 10 23 -141 171 -88 86 -216 206 -285
+266 -69 61 -125 113 -125 117 0 3 74 77 165 163 91 86 205 197 255 247 l90 91
+-47 0 c-47 0 -49 -1 -220 -156 -95 -86 -203 -186 -240 -222 -60 -59 -69 -64
+-85 -51 -41 31 -178 153 -321 287 l-153 142 -50 0 c-27 0 -49 -4 -49 -8z m780
+-723 c63 -57 157 -140 208 -183 50 -43 92 -80 92 -82 0 -2 -224 -4 -497 -4
+l-497 0 44 46 c72 73 309 288 385 349 l69 55 41 -38 c22 -21 92 -86 155 -143z"/>
+</g>
+</svg>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// --- DATA --------------------------------------------------------------------
+var COUNTRIES=[
+  {name:"Россия",cities:[
+    {name:"Москва",lat:55.7558,lon:37.6173,tz:3},
+    {name:"Санкт-Петербург",lat:59.9311,lon:30.3609,tz:3},
+    {name:"Новосибирск",lat:54.9884,lon:82.9357,tz:7},
+    {name:"Екатеринбург",lat:56.8389,lon:60.6057,tz:5},
+    {name:"Казань",lat:55.8304,lon:49.0661,tz:3},
+    {name:"Краснодар",lat:45.0355,lon:38.9753,tz:3},
+    {name:"Уфа",lat:54.7388,lon:55.9721,tz:5},
+    {name:"Красноярск",lat:56.0153,lon:92.8932,tz:7},
+    {name:"Самара",lat:53.2028,lon:50.1408,tz:4},
+    {name:"Нижний Новгород",lat:56.2965,lon:43.9361,tz:3},
+    {name:"Ростов-на-Дону",lat:47.2225,lon:39.7188,tz:3},
+    {name:"Воронеж",lat:51.6720,lon:39.1843,tz:3},
+    {name:"Волгоград",lat:48.7071,lon:44.5170,tz:3},
+    {name:"Пермь",lat:58.0105,lon:56.2502,tz:5},
+    {name:"Иркутск",lat:52.2978,lon:104.2964,tz:8},
+    {name:"Владивосток",lat:43.1155,lon:131.8855,tz:10},
+    {name:"Хабаровск",lat:48.4827,lon:135.0840,tz:10},
+    {name:"Омск",lat:54.9885,lon:73.3242,tz:6},
+    {name:"Томск",lat:56.4977,lon:84.9744,tz:7},
+    {name:"Тюмень",lat:57.1522,lon:65.5272,tz:5},
+    {name:"Барнаул",lat:53.3479,lon:83.7798,tz:7},
+    {name:"Ярославль",lat:57.6261,lon:39.8845,tz:3},
+    {name:"Саратов",lat:51.5924,lon:46.0341,tz:3},
+    {name:"Махачкала",lat:42.9849,lon:47.5047,tz:3},
+    {name:"Оренбург",lat:51.7686,lon:55.0974,tz:5},
+    {name:"Сочи",lat:43.5992,lon:39.7257,tz:3},
+    {name:"Калининград",lat:54.7104,lon:20.4522,tz:2}
+  ]},
+  {name:"Казахстан",cities:[
+    {name:"Алматы",lat:43.2220,lon:76.8512,tz:6},
+    {name:"Астана (Нур-Султан)",lat:51.1801,lon:71.4460,tz:5},
+    {name:"Шымкент",lat:42.3000,lon:69.6000,tz:5},
+    {name:"Актобе",lat:50.2839,lon:57.1670,tz:5},
+    {name:"Тараз",lat:42.9000,lon:71.3667,tz:5},
+    {name:"Павлодар",lat:52.2873,lon:76.9674,tz:6},
+    {name:"Усть-Каменогорск",lat:49.9481,lon:82.6285,tz:6},
+    {name:"Семей",lat:50.4111,lon:80.2275,tz:6},
+    {name:"Атырау",lat:47.1167,lon:51.8833,tz:5},
+    {name:"Костанай",lat:53.2144,lon:63.6246,tz:6},
+    {name:"Кызылорда",lat:44.8488,lon:65.4823,tz:5},
+    {name:"Уральск",lat:51.2333,lon:51.3667,tz:5},
+    {name:"Петропавловск",lat:54.8679,lon:69.1581,tz:6},
+    {name:"Актау",lat:43.6500,lon:51.1667,tz:5},
+    {name:"Темиртау",lat:50.0593,lon:72.9646,tz:6}
+  ]},
+  {name:"Украина",cities:[
+    {name:"Киев",lat:50.4501,lon:30.5234,tz:2},
+    {name:"Харьков",lat:49.9935,lon:36.2304,tz:2},
+    {name:"Одесса",lat:46.4825,lon:30.7233,tz:2},
+    {name:"Днепр",lat:48.4647,lon:35.0462,tz:2},
+    {name:"Запорожье",lat:47.8388,lon:35.1396,tz:2},
+    {name:"Львов",lat:49.8397,lon:24.0297,tz:2},
+    {name:"Кривой Рог",lat:47.9077,lon:33.3942,tz:2},
+    {name:"Николаев",lat:46.9750,lon:31.9946,tz:2},
+    {name:"Херсон",lat:46.6354,lon:32.6169,tz:2},
+    {name:"Черновцы",lat:48.2921,lon:25.9358,tz:2}
+  ]},
+  {name:"Беларусь",cities:[
+    {name:"Минск",lat:53.9045,lon:27.5615,tz:3},
+    {name:"Гомель",lat:52.4345,lon:30.9754,tz:3},
+    {name:"Могилёв",lat:53.9168,lon:30.3449,tz:3},
+    {name:"Витебск",lat:55.1904,lon:30.2049,tz:3},
+    {name:"Гродно",lat:53.6884,lon:23.8258,tz:3},
+    {name:"Брест",lat:52.0976,lon:23.6877,tz:3},
+    {name:"Барановичи",lat:53.1327,lon:26.0145,tz:3},
+    {name:"Бобруйск",lat:53.1381,lon:29.2212,tz:3}
+  ]},
+  {name:"Узбекистан",cities:[
+    {name:"Ташкент",lat:41.2995,lon:69.2401,tz:5},
+    {name:"Самарканд",lat:39.6542,lon:66.9597,tz:5},
+    {name:"Наманган",lat:41.0011,lon:71.6680,tz:5},
+    {name:"Андижан",lat:40.7829,lon:72.3442,tz:5},
+    {name:"Фергана",lat:40.3864,lon:71.7864,tz:5},
+    {name:"Нукус",lat:42.4619,lon:59.6166,tz:5},
+    {name:"Бухара",lat:39.7747,lon:64.4286,tz:5},
+    {name:"Карши",lat:38.8600,lon:65.7911,tz:5}
+  ]},
+  {name:"Азербайджан",cities:[
+    {name:"Баку",lat:40.4093,lon:49.8671,tz:4},
+    {name:"Гянджа",lat:40.6828,lon:46.3606,tz:4},
+    {name:"Сумгайыт",lat:40.5897,lon:49.6686,tz:4},
+    {name:"Мингячевир",lat:40.7700,lon:47.0500,tz:4},
+    {name:"Нахчыван",lat:39.2092,lon:45.4122,tz:4}
+  ]},
+  {name:"Грузия",cities:[
+    {name:"Тбилиси",lat:41.6938,lon:44.8015,tz:4},
+    {name:"Кутаиси",lat:42.2679,lon:42.7181,tz:4},
+    {name:"Батуми",lat:41.6168,lon:41.6367,tz:4},
+    {name:"Рустави",lat:41.5500,lon:44.9944,tz:4},
+    {name:"Гори",lat:41.9853,lon:44.1089,tz:4}
+  ]},
+  {name:"Армения",cities:[
+    {name:"Ереван",lat:40.1872,lon:44.5152,tz:4},
+    {name:"Гюмри",lat:40.7942,lon:43.8453,tz:4},
+    {name:"Ванадзор",lat:40.8128,lon:44.4881,tz:4},
+    {name:"Абовян",lat:40.2742,lon:44.6310,tz:4},
+    {name:"Капан",lat:39.2069,lon:46.4086,tz:4}
+  ]},
+  {name:"Кыргызстан",cities:[
+    {name:"Бишкек",lat:42.8746,lon:74.5698,tz:6},
+    {name:"Ош",lat:40.5235,lon:72.7967,tz:6},
+    {name:"Jalal-Abad",lat:40.9335,lon:73.0000,tz:6},
+    {name:"Каракол",lat:42.4900,lon:78.3900,tz:6}
+  ]},
+  {name:"Таджикистан",cities:[
+    {name:"Душанбе",lat:38.5598,lon:68.7870,tz:5},
+    {name:"Худжанд",lat:40.2833,lon:69.6333,tz:5},
+    {name:"Куляб",lat:37.9167,lon:69.7833,tz:5},
+    {name:"Курган-Тюбе",lat:37.8375,lon:68.7739,tz:5}
+  ]},
+  {name:"Туркменистан",cities:[
+    {name:"Ашхабад",lat:37.9601,lon:58.3261,tz:5},
+    {name:"Туркменабад",lat:39.0833,lon:63.5667,tz:5},
+    {name:"Мары",lat:37.6000,lon:61.8333,tz:5},
+    {name:"Дашогуз",lat:41.8333,lon:59.9667,tz:5}
+  ]},
+  {name:"Молдова",cities:[
+    {name:"Кишинёв",lat:47.0105,lon:28.8638,tz:2},
+    {name:"Бельцы",lat:47.7617,lon:27.9289,tz:2},
+    {name:"Тирасполь",lat:46.8403,lon:29.6433,tz:2}
+  ]},
+  {name:"Латвия",cities:[
+    {name:"Рига",lat:56.9460,lon:24.1059,tz:2},
+    {name:"Даугавпилс",lat:55.8747,lon:26.5356,tz:2},
+    {name:"Елгава",lat:56.6511,lon:23.7213,tz:2}
+  ]},
+  {name:"Литва",cities:[
+    {name:"Вильнюс",lat:54.6872,lon:25.2797,tz:2},
+    {name:"Каунас",lat:54.8985,lon:23.9036,tz:2},
+    {name:"Клайпеда",lat:55.7033,lon:21.1442,tz:2}
+  ]},
+  {name:"Эстония",cities:[
+    {name:"Таллин",lat:59.4370,lon:24.7536,tz:2},
+    {name:"Тарту",lat:58.3776,lon:26.7290,tz:2},
+    {name:"Нарва",lat:59.3797,lon:28.1791,tz:2}
+  ]},
+  {name:"Германия",cities:[
+    {name:"Берлин",lat:52.5200,lon:13.4050,tz:1},
+    {name:"Мюнхен",lat:48.1351,lon:11.5820,tz:1},
+    {name:"Гамбург",lat:53.5753,lon:10.0153,tz:1},
+    {name:"Кёльн",lat:50.9333,lon:6.9500,tz:1},
+    {name:"Франкфурт",lat:50.1109,lon:8.6821,tz:1},
+    {name:"Дюссельдорф",lat:51.2217,lon:6.7762,tz:1},
+    {name:"Штутгарт",lat:48.7758,lon:9.1829,tz:1},
+    {name:"Дортмунд",lat:51.5136,lon:7.4653,tz:1}
+  ]},
+  {name:"Великобритания",cities:[
+    {name:"Лондон",lat:51.5074,lon:-0.1278,tz:0},
+    {name:"Манчестер",lat:53.4808,lon:-2.2426,tz:0},
+    {name:"Бирмингем",lat:52.4862,lon:-1.8904,tz:0},
+    {name:"Глазго",lat:55.8642,lon:-4.2518,tz:0},
+    {name:"Эдинбург",lat:55.9533,lon:-3.1883,tz:0},
+    {name:"Ливерпуль",lat:53.4084,lon:-2.9916,tz:0}
+  ]},
+  {name:"Нидерланды",cities:[
+    {name:"Амстердам",lat:52.3676,lon:4.9041,tz:1},
+    {name:"Роттердам",lat:51.9225,lon:4.4792,tz:1},
+    {name:"Гаага",lat:52.0705,lon:4.3007,tz:1},
+    {name:"Утрехт",lat:52.0907,lon:5.1214,tz:1}
+  ]},
+  {name:"Израиль",cities:[
+    {name:"Тель-Авив",lat:32.0853,lon:34.7818,tz:2},
+    {name:"Иерусалим",lat:31.7683,lon:35.2137,tz:2},
+    {name:"Хайфа",lat:32.7940,lon:34.9896,tz:2},
+    {name:"Беэр-Шева",lat:31.2530,lon:34.7915,tz:2},
+    {name:"Нетания",lat:32.3215,lon:34.8532,tz:2}
+  ]},
+  {name:"ОАЭ",cities:[
+    {name:"Дубай",lat:25.2048,lon:55.2708,tz:4},
+    {name:"Абу-Даби",lat:24.4539,lon:54.3773,tz:4},
+    {name:"Шарджа",lat:25.3462,lon:55.4211,tz:4},
+    {name:"Аджман",lat:25.4111,lon:55.4354,tz:4}
+  ]},
+  {name:"Индия",cities:[
+    {name:"Дели",lat:28.6139,lon:77.2090,tz:5.5},
+    {name:"Мумбаи",lat:19.0760,lon:72.8777,tz:5.5},
+    {name:"Бангалор",lat:12.9716,lon:77.5946,tz:5.5},
+    {name:"Калькутта",lat:22.5726,lon:88.3639,tz:5.5},
+    {name:"Ченнай",lat:13.0827,lon:80.2707,tz:5.5},
+    {name:"Хайдарабад",lat:17.3850,lon:78.4867,tz:5.5},
+    {name:"Джайпур",lat:26.9124,lon:75.7873,tz:5.5},
+    {name:"Варанаси",lat:25.3176,lon:82.9739,tz:5.5},
+    {name:"Пуна",lat:18.5204,lon:73.8567,tz:5.5}
+  ]},
+  {name:"Таиланд",cities:[
+    {name:"Бангкок",lat:13.7563,lon:100.5018,tz:7},
+    {name:"Чиангмай",lat:18.7883,lon:98.9853,tz:7},
+    {name:"Паттайя",lat:12.9236,lon:100.8825,tz:7},
+    {name:"Пхукет",lat:7.8804,lon:98.3923,tz:7},
+    {name:"Хуа Хин",lat:12.5684,lon:99.9578,tz:7}
+  ]},
+  {name:"Турция",cities:[
+    {name:"Стамбул",lat:41.0082,lon:28.9784,tz:3},
+    {name:"Анкара",lat:39.9334,lon:32.8597,tz:3},
+    {name:"Анталья",lat:36.8969,lon:30.7133,tz:3},
+    {name:"Измир",lat:38.4192,lon:27.1287,tz:3},
+    {name:"Алания",lat:36.5460,lon:32.0064,tz:3},
+    {name:"Бурса",lat:40.1885,lon:29.0610,tz:3},
+    {name:"Трабзон",lat:41.0015,lon:39.7178,tz:3}
+  ]},
+  {name:"США",cities:[
+    {name:"Нью-Йорк",lat:40.7128,lon:-74.0060,tz:-5},
+    {name:"Лос-Анджелес",lat:34.0522,lon:-118.2437,tz:-8},
+    {name:"Чикаго",lat:41.8781,lon:-87.6298,tz:-6},
+    {name:"Хьюстон",lat:29.7604,lon:-95.3698,tz:-6},
+    {name:"Майами",lat:25.7617,lon:-80.1918,tz:-5},
+    {name:"Сан-Франциско",lat:37.7749,lon:-122.4194,tz:-8},
+    {name:"Даллас",lat:32.7767,lon:-96.7970,tz:-6},
+    {name:"Лас-Вегас",lat:36.1699,lon:-115.1398,tz:-8},
+    {name:"Сиэтл",lat:47.6062,lon:-122.3321,tz:-8},
+    {name:"Бостон",lat:42.3601,lon:-71.0589,tz:-5}
+  ]},
+  {name:"Канада",cities:[
+    {name:"Торонто",lat:43.6532,lon:-79.3832,tz:-5},
+    {name:"Монреаль",lat:45.5017,lon:-73.5673,tz:-5},
+    {name:"Ванкувер",lat:49.2827,lon:-123.1207,tz:-8},
+    {name:"Калгари",lat:51.0447,lon:-114.0719,tz:-7},
+    {name:"Оттава",lat:45.4215,lon:-75.6972,tz:-5}
+  ]},
+  {name:"Австралия",cities:[
+    {name:"Сидней",lat:-33.8688,lon:151.2093,tz:10},
+    {name:"Мельбурн",lat:-37.8136,lon:144.9631,tz:10},
+    {name:"Брисбен",lat:-27.4698,lon:153.0251,tz:10},
+    {name:"Перт",lat:-31.9505,lon:115.8605,tz:8},
+    {name:"Аделаида",lat:-34.9285,lon:138.6007,tz:9.5}
+  ]},
+  {name:"Балийский остров",cities:[
+    {name:"Денпасар (Бали)",lat:-8.6705,lon:115.2126,tz:8},
+    {name:"Убуд",lat:-8.5069,lon:115.2625,tz:8},
+    {name:"Семиньяк",lat:-8.6906,lon:115.1594,tz:8}
+  ]}
+];
+
+// Flat list for backward compatibility
+var CITIES=[];
+COUNTRIES.forEach(function(c){c.cities.forEach(function(city){CITIES.push(city);});});
+
+var NAKSHATRAS=[
+  {name:"Ашвини",lord:"Кету",quality:"Кшипра",sym:"♈",nature:"Лёгкая"},
+  {name:"Бхарани",lord:"Венера",quality:"Угра",sym:"▽",nature:"Жёсткая"},
+  {name:"Криттика",lord:"Солнце",quality:"Мишра",sym:"✂",nature:"Смешанная"},
+  {name:"Рохини",lord:"Луна",quality:"Стхира",sym:"♉",nature:"Постоянная"},
+  {name:"Мригашира",lord:"Марс",quality:"Мриду",sym:"☽",nature:"Мягкая"},
+  {name:"Ардра",lord:"Раху",quality:"Тикшна",sym:"✦",nature:"Острая"},
+  {name:"Пунарвасу",lord:"Юпитер",quality:"Чара",sym:"⊕",nature:"Подвижная"},
+  {name:"Пушья",lord:"Сатурн",quality:"Лагху",sym:"✿",nature:"Лёгкая"},
+  {name:"Ашлеша",lord:"Меркурий",quality:"Тикшна",sym:"∿",nature:"Острая"},
+  {name:"Магха",lord:"Кету",quality:"Угра",sym:"♛",nature:"Жёсткая"},
+  {name:"Пурва Пхалгуни",lord:"Венера",quality:"Угра",sym:"♡",nature:"Жёсткая"},
+  {name:"Уттара Пхалгуни",lord:"Солнце",quality:"Стхира",sym:"♢",nature:"Постоянная"},
+  {name:"Хаста",lord:"Луна",quality:"Кшипра",sym:"✋",nature:"Лёгкая"},
+  {name:"Читра",lord:"Марс",quality:"Мриду",sym:"✦",nature:"Мягкая"},
+  {name:"Свати",lord:"Раху",quality:"Чара",sym:"◻",nature:"Подвижная"},
+  {name:"Вишакха",lord:"Юпитер",quality:"Мишра",sym:"⚖",nature:"Смешанная"},
+  {name:"Анурадха",lord:"Сатурн",quality:"Мриду",sym:"★",nature:"Мягкая"},
+  {name:"Джьештха",lord:"Меркурий",quality:"Тикшна",sym:"⚡",nature:"Острая"},
+  {name:"Мула",lord:"Кету",quality:"Тикшна",sym:"⚘",nature:"Острая"},
+  {name:"Пурва Ашадха",lord:"Венера",quality:"Угра",sym:"≈",nature:"Жёсткая"},
+  {name:"Уттара Ашадха",lord:"Солнце",quality:"Стхира",sym:"♕",nature:"Постоянная"},
+  {name:"Шравана",lord:"Луна",quality:"Чара",sym:"◉",nature:"Подвижная"},
+  {name:"Дхаништха",lord:"Марс",quality:"Чара",sym:"⬡",nature:"Подвижная"},
+  {name:"Шатабхиша",lord:"Раху",quality:"Чара",sym:"⭕",nature:"Подвижная"},
+  {name:"Пурва Бхадрапада",lord:"Юпитер",quality:"Угра",sym:"⚔",nature:"Жёсткая"},
+  {name:"Уттара Бхадрапада",lord:"Сатурн",quality:"Стхира",sym:"♓",nature:"Постоянная"},
+  {name:"Ревати",lord:"Меркурий",quality:"Мриду",sym:"♪",nature:"Мягкая"}
+];
+
+var TITHIS=["Пратипада","Двитийя","Тритийя","Чатуртхи","Панчами","Шаштхи","Саптами","Аштами","Навами","Дашами","Экадаши","Двадаши","Трайодаши","Чатурдаши","Пурнима","Пратипада","Двитийя","Тритийя","Чатуртхи","Панчами","Шаштхи","Саптами","Аштами","Навами","Дашами","Экадаши","Двадаши","Трайодаши","Чатурдаши","Амавасья"];
+var TITHI_Q=[4,5,5,3,5,3,5,2,3,5,5,5,4,2,1,4,5,5,3,5,3,5,2,3,5,5,5,4,2,1];
+var KARANAS=[
+  {name:"Кимстугхна",type:"fixed",q:3,desc:"Начало цикла, нейтральная"},
+  {name:"Бава",type:"movable",q:4,desc:"Для добрых дел и начинаний"},
+  {name:"Балава",type:"movable",q:5,desc:"Для всех благих дел"},
+  {name:"\u041a\u0430\u0443\u043b\u0430\u0432\u0430",type:"movable",q:4,desc:"Для семейных дел"},
+  {name:"Тайтила",type:"movable",q:4,desc:"Для сельского хозяйства и торговли"},
+  {name:"Гараджа",type:"movable",q:3,desc:"Для путешествий"},
+  {name:"Ванидж",type:"movable",q:5,desc:"Торговля и коммерческие дела"},
+  {name:"Вишти (Бхадра)",type:"movable",q:1,desc:"Неблагоприятна, избегать важных дел"},
+  {name:"Шакуни",type:"fixed",q:2,desc:"Для магических ритуалов"},
+  {name:"Чатушпада",type:"fixed",q:3,desc:"Для дел с животными"},
+  {name:"Нага",type:"fixed",q:2,desc:"Нежелательна для начинаний"},
+];
+function calcKarana(mS,sS){
+  var k=Math.floor(n360(mS-sS)/6);
+  var idx;
+  if(k===0) idx=0; // Kimstughna
+  else if(k>=1&&k<=56) idx=((k-1)%7)+1; // 7 movable
+  else if(k===57) idx=8; // Shakuni
+  else if(k===58) idx=9; // Chatushpada
+  else idx=10; // Naga
+  return {karana:KARANAS[idx],kIdx:idx};
+}
+var TITHI_BLOCKED=[3,7,13,29];
+
+var YOGAS=[
+  {name:"Вишкамбха",s:1},{name:"Притхи",s:5},{name:"Айюшман",s:5},{name:"Саубхагья",s:5},
+  {name:"Шобхана",s:5},{name:"Атиганда",s:2},{name:"Сукарма",s:5},{name:"Дхрити",s:5},
+  {name:"Шула",s:1},{name:"Ганда",s:1},{name:"Вриддхи",s:5},{name:"Дхрува",s:5},
+  {name:"Вьягхата",s:2},{name:"Харшана",s:5},{name:"Ваджра",s:3},{name:"Сиддхи",s:5},
+  {name:"Вьятипата",s:1},{name:"Варийян",s:4},{name:"Парига",s:2},{name:"Шива",s:5},
+  {name:"Сиддха",s:5},{name:"Садхья",s:5},{name:"Шубха",s:5},{name:"Шукла",s:5},
+  {name:"Брахма",s:5},{name:"Айндра",s:5},{name:"Вайдхрити",s:1}
+];
+var YOGA_BLOCKED=[0,8,9,16];
+
+var VARAS=[
+  {name:"Воскресенье",short:"Вс",lord:"Солнце",score:4,color:"#c8600a"},
+  {name:"Понедельник",short:"Пн",lord:"Луна",score:5,color:"#4a6a9e"},
+  {name:"Вторник",short:"Вт",lord:"Марс",score:2,color:"#a03030"},
+  {name:"Среда",short:"Ср",lord:"Меркурий",score:4,color:"#2a7d4f"},
+  {name:"Четверг",short:"Чт",lord:"Юпитер",score:5,color:"#9a7808"},
+  {name:"Пятница",short:"Пт",lord:"Венера",score:5,color:"#7a3a8a"},
+  {name:"Суббота",short:"Сб",lord:"Сатурн",score:2,color:"#555"}
+];
+
+var RAHU_B=[8,2,7,5,6,4,3];
+var GULIKA_B=[6,5,4,3,2,1,7];
+
+var QUALITY_NAKS={
+  stira:{naks:[3,11,20,25],label:"Стхира - постоянство, долгий результат"},
+  chara:{naks:[6,14,21,22,23],label:"Чара - движение, перемены, путешествия"},
+  mridu:{naks:[4,13,16,26],label:"Мриду - мягкость, отношения, творчество"},
+  kshipra:{naks:[0,7,12],label:"Кшипра - быстрый результат, торговля"},
+  ugra:{naks:[1,9,10,19,24],label:"Угра - разрушение, споры, конфликты"},
+  tikshna:{naks:[5,8,17,18],label:"Тикшна - острое, хирургия, магия"}
+};
+
+var CATEGORIES=[
+  {id:"family",label:"Семья и отношения",icon:"&#128141;",color:"#9b3d7a",events:[
+    {id:"marriage",label:"Свадьба / регистрация",notes:"Рохини, Мригашира, Хаста, Свати, Анурадха - особо благоприятны. Бхарани, Мула, Джьештха - табу.",naksGood:[3,4,7,11,12,14,16,20,25,26],naksBad:[1,2,8,9,17,18,24],tithiGood:[1,2,3,5,7,10,11,12,13],tithiBad:[6,8],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,19,20,21,22]},
+    {id:"engagement",label:"Помолвка / сватовство",notes:"Хаста, Рохини, Мригашира, Свати. Вторник и Суббота нежелательны.",naksGood:[3,4,7,12,13,14,16,25,26],naksBad:[1,8,9,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[8],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,19,20]},
+    {id:"conception",label:"Зачатие / планирование ребёнка",notes:"Рохини - лучшая. Шукла-пакша (растущая Луна). Пятница и Понедельник предпочтительны.",naksGood:[3,4,7,11,12,16,20,25,26],naksBad:[0,1,8,9,18,24],tithiGood:[1,2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,4,5],varaBad:[2],yogaGood:[2,3,4,7,11,15,19,20,22,25]},
+    {id:"naming",label:"Имянаречение (Намадана)",notes:"Пушья, Хаста, Ашвини, Шравана - традиционно используются.",naksGood:[0,4,6,7,12,13,21,25,26],naksBad:[1,8,9,18],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[],varaGood:[1,3,4,5],varaBad:[2],yogaGood:[2,3,4,7,11,15,19]}
+  ]},
+  {id:"finance",label:"Финансы и бизнес",icon:"&#128176;",color:"#7a5e00",events:[
+    {id:"biz_open",label:"Открытие бизнеса / ИП / ООО",notes:"Рохини, Пушья, Уттара Пхалгуни. Среда и Четверг - покровители торговли.",naksGood:[3,7,11,12,16,20,21,25,26],naksBad:[1,5,9,10,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[2,3,4,7,11,15,19,21,22,25]},
+    {id:"contract",label:"Подписание договора / сделки",notes:"Хаста (Луна), Меркурианские накшатры. Среда - день Меркурия.",naksGood:[3,7,12,13,16,20,22,25,26],naksBad:[1,5,9,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,21,22,25]},
+    {id:"invest",label:"Инвестиции / покупка активов",notes:"Стхира-накшатры (Рохини, Уттара). Долгосрочные вложения требуют постоянства.",naksGood:[3,7,11,12,20,21,25],naksBad:[1,5,6,9,14,18,22,23,24],tithiGood:[2,3,5,7,10,11,12],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[2,7,11,15,19,21,25]},
+    {id:"loan",label:"Взять кредит / заём",notes:"Подвижные накшатры (Чара) - деньги должны «течь». Избегать Субботу.",naksGood:[3,7,12,16,21,25],naksBad:[1,9,18,24],tithiGood:[2,5,7,10,11],tithiBad:[14,29],varaGood:[1,3,4],varaBad:[2,6],yogaGood:[3,7,11,15]},
+    {id:"account",label:"Открытие счёта / вклада",notes:"Пушья - «накшатра богатства». Четверг и Пятница - дни роста.",naksGood:[3,4,7,11,12,20,21,25],naksBad:[1,9,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,21,25]},
+    {id:"launch",label:"Запуск продукта / первая продажа",notes:"Лёгкие и подвижные накшатры - быстрый отклик рынка.",naksGood:[0,4,6,7,12,13,16,21,22],naksBad:[1,8,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,15,19,20,21,22]}
+  ]},
+  {id:"travel",label:"Путешествия и переезды",icon:"&#128747;",color:"#1a5a7a",events:[
+    {id:"trip",label:"Начало путешествия",notes:"Чара-накшатры - созданы для движения. Вторник нежелателен.",naksGood:[0,4,6,7,12,13,14,21,22,23,26],naksBad:[1,3,8,9,11,20,25],tithiGood:[2,3,5,7,10,11,12],tithiBad:[14,29],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,15,19,20,21,22]},
+    {id:"relocate",label:"Переезд в другой город / страну",notes:"Стхира - для постоянного переселения. Чара - для временного.",naksGood:[3,4,6,7,11,12,21,25,26],naksBad:[1,8,9,10,17,18],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,20,21,25]},
+    {id:"vehicle",label:"Покупка автомобиля / транспорта",notes:"Ашвини - накшатра скорости. Воскресенье (Солнце) - благоприятно для техники.",naksGood:[0,4,6,7,12,13,21,22,23],naksBad:[1,8,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,20,21,22]}
+  ]},
+  {id:"home",label:"Дом и имущество",icon:"&#127968;",color:"#1a5a2a",events:[
+    {id:"griha",label:"Грихаправеша (въезд в дом)",notes:"Рохини - «накшатра дома». Уттара-накшатры дают долговечность.",naksGood:[3,4,7,11,12,13,20,21,25,26],naksBad:[1,2,5,8,9,10,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,20,21,25]},
+    {id:"realestate",label:"Покупка недвижимости",notes:"Стхира критически важна для устойчивости владения. Четверг - лучший день.",naksGood:[3,7,11,12,20,21,25],naksBad:[1,5,9,10,14,17,18,22,23,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,20,21,25]},
+    {id:"build",label:"Начало строительства / ремонта",notes:"Рохини, Уттара Ашадха - прочность. Вторник разрушителен для стройки.",naksGood:[3,4,7,11,12,20,21,25],naksBad:[1,5,9,10,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,7,11,15,19,20,21,25]}
+  ]},
+  {id:"health",label:"Здоровье и тело",icon:"&#127973;",color:"#7a1a1a",events:[
+    {id:"surgery",label:"Операция / хирургия",notes:"Ашвини - накшатра исцеления. Четверг - покровитель врачей.",naksGood:[0,4,7,12,13,21,25,26],naksBad:[1,2,5,8,9,10,17,18,24],tithiGood:[1,2,3,7,10,11,12],tithiBad:[14,29],varaGood:[1,3,4],varaBad:[2,5,6],yogaGood:[2,3,7,11,15,19,25]},
+    {id:"therapy",label:"Начало лечения / терапии",notes:"Пушья - лучшая для лечения. Понедельник - покровитель медицины.",naksGood:[0,4,7,12,13,16,21,25,26],naksBad:[1,5,8,9,10,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2],yogaGood:[2,3,7,11,15,19,21,25]},
+    {id:"haircut",label:"Стрижка / Кешаванда",notes:"Шукла-пакша для роста волос. Пятница - день Венеры и красоты.",naksGood:[0,6,7,12,13,14,21,22],naksBad:[1,8,9,17,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,0],yogaGood:[3,4,7,11,15,19,20,21,22]}
+  ]},
+  {id:"career",label:"Карьера и обучение",icon:"&#128218;",color:"#1a2a7a",events:[
+    {id:"study",label:"Начало обучения / курса",notes:"Пушья - лучшая для учёбы. Среда - день знаний и Меркурия.",naksGood:[4,6,7,12,13,14,21,26],naksBad:[1,5,8,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[2,3,4,7,11,15,19,20,21,22,25]},
+    {id:"exam",label:"Экзамен / защита",notes:"Хаста, Пушья, Ашвини. Четверг и Среда - лучшие дни.",naksGood:[0,4,6,7,12,13,14,21,26],naksBad:[5,8,9,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[2,3,7,11,15,19,20,21,22,25]},
+    {id:"newjob",label:"Выход на новую работу",notes:"Чара и Кшипра - быстрая адаптация. Воскресенье не подходит.",naksGood:[0,4,6,7,12,13,16,21,25],naksBad:[1,5,8,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,0,6],yogaGood:[3,4,7,11,15,19,20,21,22]},
+    {id:"pitch",label:"Переговоры / важная встреча",notes:"Меркурианские накшатры - красноречие. Среда - коммуникация.",naksGood:[4,6,7,8,12,13,16,17,21,26],naksBad:[1,5,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,15,19,20,21,22,25]},
+    {id:"project",label:"Запуск проекта / стартапа",notes:"Стхира + Чара - стабильность и гибкость. Юпитер и Венера - рост.",naksGood:[0,4,6,7,12,13,16,21,22,25],naksBad:[1,8,9,10,18,24],tithiGood:[2,3,5,7,10,11,12,13],tithiBad:[14,29],varaGood:[0,1,3,4,5],varaBad:[2,6],yogaGood:[3,4,7,11,15,19,20,21,22,25]}
+  ]},
+  {id:"spiritual",label:"Духовные практики",icon:"&#128329;",color:"#4a2a7a",events:[
+    {id:"sadhana",label:"Начало садханы / медитации",notes:"Шравана, Пушья, Анурадха. Понедельник - день Шивы.",naksGood:[4,6,7,12,13,16,21,25,26],naksBad:[1,5,8,9,10,18,24],tithiGood:[1,2,3,5,7,10,11,12,13],tithiBad:[],varaGood:[0,1,3,4,5],varaBad:[2],yogaGood:[2,3,7,11,15,19,20,21,22,25]},
+    {id:"diksha",label:"Дикша / посвящение",notes:"Рохини, Уттара - священны. Пурнима благоприятна. Понедельник и Четверг - Гуру.",naksGood:[3,4,7,12,13,16,20,25,26],naksBad:[1,5,8,9,10,18,24],tithiGood:[1,2,3,5,7,10,11,12,13,14],tithiBad:[29],varaGood:[1,3,4,5],varaBad:[2],yogaGood:[2,3,7,11,15,19,20,21,22,25]},
+    {id:"temple",label:"Паломничество / посещение храма",notes:"Накшатры Юпитера и Луны. Воскресенье - традиционный день храма.",naksGood:[0,4,6,7,12,13,16,21,25,26],naksBad:[1,8,9,18],tithiGood:[1,2,3,5,7,10,11,12,13,14],tithiBad:[29],varaGood:[0,1,3,4,5],varaBad:[2],yogaGood:[2,3,7,11,15,19,20,21,22,25]}
+  ]}
+];
+
+// --- ASTRONOMY (NOAA, +-1 min) -------------------------------------------------
+var toR=function(d){return d*Math.PI/180;};
+var toD=function(r){return r*180/Math.PI;};
+var n360=function(x){return((x%360)+360)%360;};
+
+function jday(y,m,d,utH){
+  utH=utH||12;
+  if(m<=2){y--;m+=12;}
+  var A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+utH/24+B-1524.5;
+}
+
+function solarData(JD){
+  var T=(JD-2451545)/36525;
+  var L0=n360(280.46646+36000.76983*T+0.0003032*T*T);
+  var M=n360(357.52911+35999.05029*T-0.0001537*T*T);
+  var e=0.016708634-0.000042037*T;
+  var Mr=toR(M);
+  var C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);
+  var sl=L0+C;
+  var om=n360(125.04-1934.136*T);
+  var al=sl-0.00569-0.00478*Math.sin(toR(om));
+  var eps=23.439-0.00000036*T*36525+0.00256*Math.cos(toR(om));
+  var decl=toD(Math.asin(Math.sin(toR(eps))*Math.sin(toR(al))));
+  var y2=Math.pow(Math.tan(toR(eps/2)),2);
+  var EqT=4*toD(y2*Math.sin(2*toR(L0))-2*e*Math.sin(Mr)+4*e*y2*Math.sin(Mr)*Math.cos(2*toR(L0))-0.5*y2*y2*Math.sin(4*toR(L0))-1.25*e*e*Math.sin(2*Mr));
+  return{decl:decl,EqT:EqT};
+}
+
+function sunTimes(year,month,day,lat,lon,tz){
+  var JD=jday(year,month,day,12);
+  var sd=solarData(JD);
+  var cosHA=(Math.cos(toR(90.833))-Math.sin(toR(lat))*Math.sin(toR(sd.decl)))/(Math.cos(toR(lat))*Math.cos(toR(sd.decl)));
+  var noonMin=720-4*lon-sd.EqT+tz*60;
+  if(cosHA>1)return{sunrise:null,sunset:null,noon:noonMin/60,EqT:sd.EqT};
+  if(cosHA<-1)return{sunrise:0,sunset:24,noon:noonMin/60,EqT:sd.EqT};
+  var HA=toD(Math.acos(cosHA));
+  return{sunrise:(noonMin-4*HA)/60,sunset:(noonMin+4*HA)/60,noon:noonMin/60,EqT:sd.EqT};
+}
+
+function lahiri(JD){var T=(JD-2451545)/36525;return 23.8530+1.397*T;}
+
+function sunLon(JD){
+  var T=(JD-2451545)/36525;
+  var L0=n360(280.46646+36000.76983*T+0.0003032*T*T);
+  var M=n360(357.52911+35999.05029*T-0.0001537*T*T);
+  var Mr=toR(M);
+  var C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);
+  return n360(L0+C);
+}
+
+function moonLon(JD){
+  var T=(JD-2451545)/36525;
+  var L=n360(218.3165+481267.8813*T);
+  var M=n360(357.5291+35999.0503*T);
+  var Mp=n360(134.9634+477198.8676*T);
+  var D=n360(297.8502+445267.1115*T);
+  var F=n360(93.2721+483202.0175*T);
+  var lo=L;
+  lo+=6.2888*Math.sin(toR(Mp));lo-=1.2740*Math.sin(toR(2*D-Mp));lo+=0.6583*Math.sin(toR(2*D));
+  lo+=0.2136*Math.sin(toR(2*Mp));lo-=0.1851*Math.sin(toR(M));lo-=0.1143*Math.sin(toR(2*F));
+  lo+=0.0588*Math.sin(toR(2*D-2*Mp));lo+=0.0572*Math.sin(toR(2*D-M-Mp));lo+=0.0533*Math.sin(toR(2*D+Mp));
+  lo+=0.0458*Math.sin(toR(2*D-M));lo+=0.0409*Math.sin(toR(Mp-M));lo-=0.0347*Math.sin(toR(Mp+M));
+  lo-=0.0302*Math.sin(toR(2*(D-F)));lo+=0.0247*Math.sin(toR(2*D-2*M));lo-=0.0222*Math.sin(toR(2*(D+Mp)));
+  return n360(lo);
+}
+
+function kala(sr,ss,block){var p=(ss-sr)/8;return{start:sr+(block-1)*p,end:sr+block*p};}
+
+function calcP(dateStr,localH,city){
+  var parts=dateStr.split('-');
+  var y=+parts[0],m=+parts[1],d=+parts[2];
+  var JD=jday(y,m,d,localH-city.tz);
+  var ay=lahiri(JD);
+  var sS=n360(sunLon(JD)-ay);
+  var mS=n360(moonLon(JD)-ay);
+  var NAK=360/27;
+  var nIdx=Math.floor(mS/NAK)%27;
+  var nFrac=(mS%NAK)/NAK;
+  var nPada=Math.floor(nFrac*4)+1;
+  var tIdx=Math.floor(n360(mS-sS)/12)%30;
+  var lunarDay=tIdx%15+1; // 1-15 within paksha
+  var paksha=tIdx<15?'Шукла':'Кришна';
+  var kData=calcKarana(mS,sS);
+  var yIdx=Math.floor(n360(mS+sS)/(360/27))%27;
+  var dow=new Date(dateStr).getDay();
+  var st=sunTimes(y,m,d,city.lat,city.lon,city.tz);
+  var sr=st.sunrise!=null?st.sunrise:6;
+  var ss2=st.sunset!=null?st.sunset:18;
+  var noon=st.noon||(sr+ss2)/2;
+  return{
+    sS:sS,mS:mS,ay:ay,nIdx:nIdx,nFrac:nFrac,nPada:nPada,tIdx:tIdx,yIdx:yIdx,dow:dow,
+    lunarDay:lunarDay,paksha:paksha,karana:kData.karana,kIdx:kData.kIdx,
+    nakshatra:NAKSHATRAS[nIdx],tithi:TITHIS[tIdx],tithiQ:TITHI_Q[tIdx],
+    yoga:YOGAS[yIdx],vara:VARAS[dow],
+    sunrise:sr,sunset:ss2,noon:noon,EqT:st.EqT||0,
+    rahu:kala(sr,ss2,RAHU_B[dow]),gulik:kala(sr,ss2,GULIKA_B[dow]),
+    abh:{start:noon-0.4,end:noon+0.4}
+  };
+}
+
+// --- SCORING -----------------------------------------------------------------
+function scoreSlot(localH,p,ev){
+  if(localH>=p.rahu.start&&localH<p.rahu.end) return{s:0,tag:"Раху Кала",block:true};
+  if(localH>=p.gulik.start&&localH<p.gulik.end) return{s:0,tag:"Гулика Кала",block:true};
+  if(YOGA_BLOCKED.indexOf(p.yIdx)>=0) return{s:1,reasons:["Йога "+p.yoga.name+" - неблагоприятна ✗"],block:false};
+
+  var sc=0,R=[];
+  if(TITHI_BLOCKED.indexOf(p.tIdx)>=0){sc-=1.5;R.push("Титхи "+p.tithi+" - осложнена ✗");}
+
+  sc+=p.vara.score*0.22;
+  if(ev.varaGood&&ev.varaGood.indexOf(p.dow)>=0){sc+=1.2;R.push("День "+p.vara.name+" ✓");}
+  if(ev.varaBad&&ev.varaBad.indexOf(p.dow)>=0){sc-=1.0;R.push(p.vara.name+" нежелателен ✗");}
+
+  sc+=p.tithiQ*0.16;
+  var tNum=p.tIdx%15;
+  if(ev.tithiGood&&ev.tithiGood.indexOf(tNum)>=0){sc+=1.0;R.push("Титхи "+(tNum+1)+" ✓");}
+  if(ev.tithiBad&&ev.tithiBad.indexOf(p.tIdx)>=0){sc-=1.0;R.push("Титхи "+p.tithi+" ✗");}
+
+  var nQ={Кшипра:5,Лагху:5,Мриду:5,Стхира:4,Чара:4,Мишра:3,Угра:2,Тикшна:2};
+  sc+=(nQ[p.nakshatra.quality]||3)*0.14;
+  if(ev.naksGood&&ev.naksGood.indexOf(p.nIdx)>=0){sc+=1.5;R.push(p.nakshatra.name+" ✓");}
+  if(ev.naksBad&&ev.naksBad.indexOf(p.nIdx)>=0){sc-=1.5;R.push(p.nakshatra.name+" нежелательна ✗");}
+
+  sc+=p.yoga.s*0.16;
+  if(ev.yogaGood&&ev.yogaGood.indexOf(p.yIdx)>=0){sc+=0.8;R.push("Йога "+p.yoga.name+" ✓");}
+  else if(p.yoga.s>=5) R.push("Йога "+p.yoga.name+" ✓");
+  if(p.yoga.s<=1){sc-=0.8;R.push("Йога "+p.yoga.name+" ✗");}
+
+  if(localH>=p.abh.start&&localH<p.abh.end){sc+=2.0;R.push("Абхиджит ✦");}
+
+  return{s:Math.min(10,Math.max(0,(sc/10)*10)),reasons:R,block:false};
+}
+
+function getDaySlots(dateStr,city,ev){
+  var p0=calcP(dateStr,12,city);
+  var sr=p0.sunrise,ss=p0.sunset,out=[];
+  for(var h=Math.max(4,sr-0.5);h<ss+0.5;h+=0.5){
+    var p=calcP(dateStr,h,city);
+    var sc=scoreSlot(h,p,ev);
+    out.push({h:h,p:p,s:sc.s,tag:sc.tag,block:sc.block,reasons:sc.reasons});
+  }
+  return out;
+}
+
+// --- HELPERS -----------------------------------------------------------------
+function fmt(h){
+  h=((h%24)+24)%24;
+  var hh=Math.floor(h),mm=Math.round((h-hh)*60);
+  if(mm>=60){hh++;mm=0;}
+  return(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+}
+function fmtDate(s){
+  var d=new Date(s);
+  return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',weekday:'short'});
+}
+function col(s){return s>=8?'#1e6b3d':s>=6?'#5a8a1a':s>=4?'#9a7000':s>=2?'#a04010':'#8a1a1e';}
+function lbl(s){return s>=8?'Отлично':s>=6?'Хорошо':s>=4?'Нейтрально':s>=2?'Слабо':'Неблаг.';}
+function colBg(s){return s>=8?'#f0fff7':s>=6?'#f6fce8':s>=4?'#fffbeb':s>=2?'#fff4ed':'#fff4f4';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function stars(n,max){max=max||3;var s='';for(var i=0;i<Math.min(n,max);i++)s+='&#9733;';for(var i=Math.min(n,max);i<max;i++)s+='&#9734;';return s;}
+
+function scoreCircleSVG(s,size){
+  size=size||80;
+  var r=(size-10)/2,c=2*Math.PI*r,f=(s/10)*c,cl=col(s);
+  return '<div class="scc" style="width:'+size+'px;height:'+size+'px;">'+
+    '<svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)">'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="#e8ddc5" stroke-width="7"/>'+
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+cl+'" stroke-width="7" stroke-dasharray="'+f+' '+c+'" stroke-linecap="round"/>'+
+    '</svg>'+
+    '<div class="scn"><span class="scb" style="color:'+cl+'">'+s.toFixed(1)+'</span></div>'+
+    '</div>';
+}
+
+// --- STATE -------------------------------------------------------------------
+var today=new Date().toISOString().split('T')[0];
+var twoWeeks=new Date();twoWeeks.setDate(twoWeeks.getDate()+13);
+var twoWeeksStr=twoWeeks.toISOString().split('T')[0];
+
+var S={
+  catId:null,evObj:null,
+  custom:{name:'',qualities:[],varaGood:[],tithiGood:[]},
+  mode:'single',cIdx:0,countryIdx:0,
+  date:today,time:'10:00',
+  rangeStart:today,rangeEnd:twoWeeksStr,
+  singleRes:null,rangeRes:null,selectedDay:null,
+  busy:false,progress:0,
+  calYear:new Date().getFullYear(),calMonth:new Date().getMonth(),
+  // Advanced filters for range search
+  filter:{
+    tithis:[],    // array of tIdx 0-29, empty = all
+    naks:[],      // array of nakshatra index 0-26, empty = all
+    varas:[],     // array of dow 0-6, empty = all
+    nakQuals:[],  // array of quality strings, empty = all
+    karanas:[],   // array of kIdx 0-10, empty = all
+    minScore:0    // minimum day score 0-10
+  },
+  filterOpen:false,
+  todayEnergy:null,
+  openSlot:undefined,
+  birthOpen:false,
+  birth:{date:'',time:'12:00',cIdx:0},
+  birthNak:-1  // computed janma nakshatra index, -1 = not set
+};
+
+function resolveEv(){
+  if(S.catId!=='custom') return S.evObj;
+  var naks=[];
+  S.custom.qualities.forEach(function(q){if(QUALITY_NAKS[q])naks=naks.concat(QUALITY_NAKS[q].naks);});
+  var unique=[]; naks.forEach(function(n){if(unique.indexOf(n)<0)unique.push(n);});
+  return{
+    label:S.custom.name||'Своё событие',
+    naksGood:unique.length>0?unique:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],
+    naksBad:[],
+    tithiGood:S.filter.tithis.length>0?S.filter.tithis:[1,2,3,5,7,10,11,12,13],
+    tithiBad:[],
+    varaGood:S.filter.varas.length>0?S.filter.varas:[0,1,2,3,4,5,6],varaBad:[],yogaGood:[],notes:''
+  };
+}
+function canCalc(){return S.catId==='custom'||S.evObj!==null;}
+
+// --- BUILD HTML ---------------------------------------------------------------
+function buildStep1(){
+  var h='<div class="card"><div class="ct">&#9312; Выберите категорию события</div><div class="catg">';
+  CATEGORIES.forEach(function(cat){
+    var on=S.catId===cat.id?'on':'';
+    h+='<div class="catb '+on+'" data-cat="'+cat.id+'">'+(on?'<div class="cat-chk">✓</div>':'')+
+      '<span class="catb-icon">'+cat.icon+'</span><span class="catb-lbl">'+esc(cat.label)+'</span></div>';
+  });
+  var con=S.catId==='custom'?'on':'';
+  h+='<div class="catb '+con+'" data-cat="custom">'+(con?'<div class="cat-chk">✓</div>':'')+
+    '<span class="catb-icon">&#9999;</span><span class="catb-lbl">Своё событие</span></div>';
+  h+='</div></div>';
+  return h;
+}
+
+function buildStep2(){
+  if(!S.catId) return '';
+  if(S.catId==='custom'){
+    var h='<div class="card"><div class="ct">&#9313; Настройте своё событие</div>';
+    h+='<div class="fld" style="margin-bottom:.8rem"><span class="lbl">Название события</span>';
+    h+='<input class="name-inp" id="customName" placeholder="Например: Регистрация торговой марки" maxlength="60" value="'+esc(S.custom.name)+'"></div>';
+    h+='<div style="font-size:.75rem;color:#9e7840;padding:.5rem .7rem;background:rgba(158,120,64,.07);border-radius:8px;border:1px solid rgba(180,140,60,.18)">&#9432; Дни недели, лунные сутки и накшатры настраиваются в детальном фильтре ниже, в разделе «Найти лучшую дату»</div>';
+    h+='</div>'; // close card
+    return h;
+  }
+  var cat=CATEGORIES.find(function(c){return c.id===S.catId;});
+  if(!cat) return '';
+  var h='<div class="card"><div class="ct" style="color:'+cat.color+'">&#9313; '+cat.icon+' '+esc(cat.label)+'</div><div class="evlist">';
+  cat.events.forEach(function(ev){
+    var on=S.evObj&&S.evObj.id===ev.id?'on':'';
+    h+='<button class="evb '+on+'" data-ev="'+ev.id+'">'+esc(ev.label)+(on?' <span style="float:right;color:#c8600a">✓</span>':'')+'</button>';
+  });
+  h+='</div>';
+  if(S.evObj&&S.evObj.notes){
+    h+='<div class="ev-note"><strong>&#128287; Что влияет на расчёт</strong>'+esc(S.evObj.notes)+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+
+// --- TARA BALA & CHANDRA BALA -----------------------------------------------
+function computeBirthNak(){
+  var b=S.birth;
+  if(!b.date) return -1;
+  var h=parseFloat((b.time||'12:00').split(':')[0])+(parseFloat((b.time||'12:00').split(':')[1]||0)/60);
+  var city=CITIES[b.cIdx]||CITIES[0];
+  var p=calcP(b.date,h,city);
+  return p.nIdx;
+}
+
+function tarabala(currentNIdx){
+  var jn=S.birthNak;
+  if(jn<0) return null;
+  var pos=((currentNIdx-jn+27)%27)+1; // 1-27
+  var tara=((pos-1)%9)+1; // 1-9
+  // 1=Janma(mixed), 2=Sampat(good), 3=Vipat(bad), 4=Kshema(good), 5=Pratyak(bad),
+  // 6=Sadhana(good), 7=Naidhana(bad), 8=Mitra(good), 9=Param Mitra(good)
+  var names=['\u0414\u0436\u0430\u043d\u043c\u0430','\u0421\u0430\u043c\u043f\u0430\u0442','\u0412\u0438\u043f\u0430\u0442','\u041a\u0448\u0435\u043c\u0430','\u041f\u0440\u0430\u0442\u044c\u044f\u043a','\u0421\u0430\u0434\u0445\u0430\u043d\u0430','\u041d\u0430\u0439\u0434\u0445\u0430\u043d\u0430','\u041c\u0438\u0442\u0440\u0430','\u041f\u0430\u0440\u0430\u043c \u041c\u0438\u0442\u0440\u0430'];
+  var good=[2,4,6,8,9];
+  var bad=[3,5,7];
+  return{tara:tara,name:names[tara-1],good:good.indexOf(tara)>=0,bad:bad.indexOf(tara)>=0};
+}
+
+function chandrabala(currentNIdx){
+  var jn=S.birthNak;
+  if(jn<0) return null;
+  // Moon sign (rashi) from nakshatra: each rashi = 2.25 naks
+  var birthRashi=Math.floor(jn/2.25)%12;
+  var currentRashi=Math.floor(currentNIdx/2.25)%12;
+  var pos=((currentRashi-birthRashi+12)%12)+1; // 1-12
+  var good=[1,3,6,7,10,11];
+  return{pos:pos,good:good.indexOf(pos)>=0};
+}
+
+function buildBirthProfile(){
+  var b=S.birth;
+  var hasData=!!b.date;
+  var jn=S.birthNak;
+  var h='<div style="margin-bottom:.8rem">';
+  h+='<div class="filter-toggle" id="birthToggle" style="border:1px solid rgba(180,140,60,.2);border-radius:8px;padding:.45rem .65rem;background:rgba(158,120,64,.05)">';
+  h+='<span style="font-size:.9rem">'+(S.birthOpen?'\u25be':'\u25b8')+'</span>';
+  h+='<span style="font-size:.8rem">\u2609 \u041f\u0435\u0440\u0441\u043e\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u043e\u0444\u0438\u043b\u044c (\u0422\u0430\u0440\u0430 \u0411\u0430\u043b\u0430 \u0438 \u0427\u0430\u043d\u0434\u0440\u0430 \u0411\u0430\u043b\u0430)</span>';
+  if(hasData&&jn>=0) h+='<span style="font-size:.65rem;background:#1e6b3d;color:#fff;padding:.1rem .4rem;border-radius:99px">\u0414\u0436\u0430\u043d\u043c\u0430: '+NAKSHATRAS[jn].sym+' '+NAKSHATRAS[jn].name+'</span>';
+  h+='</div>';
+  if(S.birthOpen){
+    h+='<div style="padding:.7rem;border:1px solid rgba(180,140,60,.2);border-top:none;border-radius:0 0 8px 8px;background:#faf6ef">';
+    h+='<div style="font-size:.7rem;color:#9e7840;margin-bottom:.6rem">\u0414\u0430\u0442\u0430, \u0432\u0440\u0435\u043c\u044f \u0438 \u0433\u043e\u0440\u043e\u0434 \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f \u043d\u0443\u0436\u043d\u044b \u0434\u043b\u044f \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u0438\u044f \u041b\u0443\u043d\u043d\u043e\u0439 \u043d\u0430\u043a\u0448\u0430\u0442\u0440\u044b \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f (\u0414\u0436\u0430\u043d\u043c\u0430 \u043d\u0430\u043a\u0448\u0430\u0442\u0440\u0430).</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.5rem">';
+    h+='<div class="fld"><span class="lbl">\u0414\u0430\u0442\u0430 \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f</span><input type="date" class="inp" id="birthDate" value="'+esc(b.date)+'"></div>';
+    h+='<div class="fld"><span class="lbl">\u0412\u0440\u0435\u043c\u044f \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f</span><input type="time" class="inp" id="birthTime" value="'+esc(b.time)+'"></div>';
+    h+='</div>';
+    h+='<div class="fld" style="margin-bottom:.5rem"><span class="lbl">\u0413\u043e\u0440\u043e\u0434 \u0440\u043e\u0436\u0434\u0435\u043d\u0438\u044f</span><select class="inp" id="birthCity">';
+    CITIES.forEach(function(c,i){ h+='<option value="'+i+'"'+(i===b.cIdx?' selected':'')+'>'+esc(c.name)+'</option>'; });
+    h+='</select></div>';
+    if(hasData&&jn>=0){
+      var tb=tarabala(jn); // show tara for birth nak itself (pos 1 = Janma)
+      h+='<div style="font-size:.72rem;padding:.4rem .6rem;background:rgba(30,107,61,.08);border-radius:6px;border-left:3px solid #1e6b3d">';
+      h+='\u0414\u0436\u0430\u043d\u043c\u0430 \u043d\u0430\u043a\u0448\u0430\u0442\u0440\u0430: <strong>'+NAKSHATRAS[jn].sym+' '+NAKSHATRAS[jn].name+'</strong> &middot; \u043b\u043e\u0440\u0434: '+NAKSHATRAS[jn].lord;
+      h+='<br><span style="font-size:.65rem;color:#9e7840">\u0422\u0430\u0440\u0430 \u0411\u0430\u043b\u0430 \u0438 \u0427\u0430\u043d\u0434\u0440\u0430 \u0411\u0430\u043b\u0430 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0443\u0447\u0438\u0442\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u0432 \u043e\u0446\u0435\u043d\u043a\u0435 \u0432\u0441\u0435\u0445 \u0434\u043d\u0435\u0439</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function buildStep3(){
+  if(!canCalc()) return '';
+  var h='<div class="card"><div class="ct">&#9314; Режим поиска</div>';
+  h+=buildBirthProfile();
+  h+='<div class="mode-tabs">';
+  h+='<button class="mode-tab '+(S.mode==='single'?'on':'')+'" data-mode="single">&#128336; Проверить время</button>';
+  h+='<button class="mode-tab '+(S.mode==='range'?'on':'')+'" data-mode="range">&#128197; Найти дату</button>';
+  h+='<button class="mode-tab '+(S.mode==='calendar'?'on':'')+'" data-mode="calendar">&#128506; Календарь</button>';
+  h+='</div>';
+
+  if(S.mode==='single'){
+    h+='<div class="fg3">';
+    h+='<div class="fld"><span class="lbl">Дата</span><input type="date" class="inp" id="sDate" value="'+S.date+'"></div>';
+    h+='<div class="fld"><span class="lbl">Время начала</span><input type="time" class="inp" id="sTime" value="'+S.time+'"></div>';
+    h+='</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:.65rem">';
+    h+='<div class="fld"><span class="lbl">Страна</span><select class="inp" id="sCountry">';
+    COUNTRIES.forEach(function(c,i){h+='<option value="'+i+'"'+(i===S.countryIdx?' selected':'')+'>'+esc(c.name)+'</option>';});
+    h+='</select></div>';
+    h+='<div class="fld"><span class="lbl">Город</span><select class="inp" id="sCity">';
+    COUNTRIES[S.countryIdx].cities.forEach(function(c){
+      var gi=CITIES.indexOf(c);
+      h+='<option value="'+gi+'"'+(gi===S.cIdx?' selected':'')+'>'+esc(c.name)+'</option>';
+    });
+    h+='</select></div>';
+    h+='</div>';
+    h+='<button class="btn-m" id="btnSingle"'+(S.busy?' disabled':'')+'>'+
+      (S.busy?'Считаю...':'✦ Проверить время')+'</button>';
+  } else {
+    h+='<div class="fg3">';
+    h+='<div class="fld"><span class="lbl">Начало периода</span><input type="date" class="inp" id="rStart" value="'+S.rangeStart+'"></div>';
+    h+='<div class="fld"><span class="lbl">Конец периода</span><input type="date" class="inp" id="rEnd" value="'+S.rangeEnd+'"></div>';
+    h+='</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:.65rem">';
+    h+='<div class="fld"><span class="lbl">Страна</span><select class="inp" id="rCountry">';
+    COUNTRIES.forEach(function(c,i){h+='<option value="'+i+'"'+(i===S.countryIdx?' selected':'')+'>'+esc(c.name)+'</option>';});
+    h+='</select></div>';
+    h+='<div class="fld"><span class="lbl">Город</span><select class="inp" id="rCity">';
+    COUNTRIES[S.countryIdx].cities.forEach(function(c){
+      var gi=CITIES.indexOf(c);
+      h+='<option value="'+gi+'"'+(gi===S.cIdx?' selected':'')+'>'+esc(c.name)+'</option>';
+    });
+    h+='</select></div>';
+    h+='</div>';
+    h+='<div class="presets"><span class="preset-lbl">Быстро:</span>';
+    [['week','Неделя'],['2weeks','2 недели'],['month','Этот месяц'],['nextmonth','Следующий месяц'],['3months','3 месяца']].forEach(function(p){
+      h+='<button class="preset" data-preset="'+p[0]+'">'+p[1]+'</button>';
+    });
+    h+='</div>';
+    h+='<div style="font-size:.72rem;color:#9e7840;margin-top:.45rem;padding:.4rem .7rem;background:#faf6ef;border-radius:6px;border:1px solid rgba(180,140,60,.15);">&#9432; Чем больше период, тем дольше расчёт: неделя — мгновенно, месяц — несколько секунд, 3 месяца — до 15 секунд. Результат появится автоматически.</div>';
+    if(S.catId==='custom'){
+      h+=buildAdvancedFilter();
+    }
+    if(S.busy&&S.progress>0){
+      h+='<div style="margin-top:.7rem"><div style="font-size:.75rem;color:#9e7840;margin-bottom:.3rem">Обрабатываю... '+S.progress+'%</div>';
+      h+='<div class="prog-wrap"><div class="prog-fill" style="width:'+S.progress+'%"></div></div></div>';
+    }
+    h+='<button class="btn-m" id="btnRange"'+(S.busy?' disabled':'')+'>'+
+      (S.busy?'Считаю... '+S.progress+'%':'✦ Найти лучшие даты')+'</button>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function buildTodayEnergy(){
+  var city=CITIES[S.cIdx];
+  var p=calcP(today,12,city);
+  var de=buildDayEnergy(p);
+  var tab=S.todayTab||'energy';
+
+  // Auspicious/inauspicious timeline
+  var slots=[];
+  for(var hh=p.sunrise;hh<p.sunset;hh+=0.5){
+    var blocked=false,tag='';
+    if(hh>=p.rahu.start&&hh<p.rahu.end){blocked=true;tag='Раху Кала';}
+    else if(hh>=p.gulik.start&&hh<p.gulik.end){blocked=true;tag='Гулика';}
+    var good=hh>=p.abh.start&&hh<p.abh.end;
+    slots.push({h:hh,blocked:blocked,good:good,tag:tag});
+  }
+
+  var h='<div class="energy-panel">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">';
+  h+='<div style="font-size:.82rem;font-weight:700;color:#6e2806">&#9728; Энергия сегодня</div>';
+  h+='<div style="font-size:.72rem;color:#9e7840">'+new Date(today+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</div>';
+  h+='</div>';
+  h+='<div class="energy-tabs">';
+  h+='<button class="etab'+(tab==='energy'?' on':'')+'" data-etab="energy">Обзор дня</button>';
+  h+='<button class="etab'+(tab==='timeline'?' on':'')+'" data-etab="timeline">Окна времени</button>';
+  h+='<button class="etab'+(tab==='panchanga'?' on':'')+'" data-etab="panchanga">Панчанга</button>';
+  h+='</div>';
+
+  if(tab==='energy'){
+    // Score bar
+    var de2=buildDayEnergy(p);
+    h+=de2.html.replace('<div class="card" style="border-left','<div style="border-left').replace(/<div class="ct">.*?<\/div>/,'');
+  } else if(tab==='timeline'){
+    h+='<div style="font-size:.72rem;color:#9e7840;margin-bottom:.6rem">Восход '+fmt(p.sunrise)+' — Закат '+fmt(p.sunset)+'</div>';
+    // Visual timeline bar
+    var dayLen=p.sunset-p.sunrise;
+    h+='<div style="position:relative;height:36px;background:#ede8df;border-radius:8px;overflow:hidden;margin-bottom:.7rem">';
+    slots.forEach(function(sl){
+      var pct=((sl.h-p.sunrise)/dayLen)*100;
+      var w=(0.5/dayLen)*100;
+      var bg=sl.blocked?'rgba(138,26,30,.7)':sl.good?'rgba(30,107,61,.75)':'rgba(200,160,80,.25)';
+      h+='<div style="position:absolute;left:'+pct+'%;width:'+w+'%;height:100%;background:'+bg+'"></div>';
+    });
+    // Current time marker
+    var now=new Date();
+    var nowH=now.getHours()+now.getMinutes()/60;
+    var nowPct=((nowH-p.sunrise)/dayLen)*100;
+    if(nowPct>=0&&nowPct<=100)
+      h+='<div style="position:absolute;left:'+nowPct+'%;top:0;width:2px;height:100%;background:#6e2806;z-index:2"></div>';
+    h+='</div>';
+    // Legend
+    h+='<div style="display:flex;gap:1rem;font-size:.68rem;color:#9e7840;margin-bottom:.7rem">';
+    h+='<span><span style="display:inline-block;width:10px;height:10px;background:rgba(138,26,30,.7);border-radius:2px;margin-right:3px"></span>Неблагоприятно</span>';
+    h+='<span><span style="display:inline-block;width:10px;height:10px;background:rgba(30,107,61,.75);border-radius:2px;margin-right:3px"></span>Абхиджит</span>';
+    h+='<span><span style="display:inline-block;width:10px;height:10px;background:rgba(200,160,80,.25);border-radius:2px;margin-right:3px"></span>Нейтрально</span>';
+    h+='</div>';
+    // Key periods
+    h+='<div class="g3" style="gap:.4rem">';
+    h+='<div class="inaus"><div class="in-l">&#9791; Раху Кала</div><div class="in-t">'+fmt(p.rahu.start)+'–'+fmt(p.rahu.end)+'</div><div class="in-n">Избегать начинаний</div></div>';
+    h+='<div class="inaus"><div class="in-l">&#9796; Гулика</div><div class="in-t">'+fmt(p.gulik.start)+'–'+fmt(p.gulik.end)+'</div><div class="in-n">Период Сатурна</div></div>';
+    h+='<div class="inaus good-p"><div class="in-l">✦ Абхиджит</div><div class="in-t">'+fmt(p.abh.start)+'–'+fmt(p.abh.end)+'</div><div class="in-n">Лучший период</div></div>';
+    h+='</div>';
+  } else {
+    // Panchanga tab
+    h+='<div class="g5">';
+    [{l:'Вара',v:p.vara.name,sub:p.vara.lord,c:p.vara.color},
+     {l:'Титхи',v:p.tithi,sub:p.lunarDay+' л.с. · '+p.paksha,c:'#6e2806'},
+     {l:'Накшатра',v:p.nakshatra.name,sub:'пада '+p.nPada,c:'#6e2806'},
+     {l:'Йога',v:p.yoga.name,sub:stars(Math.round(p.yoga.s/2)),c:'#6e2806'},
+     {l:'Карана',v:p.karana.name,sub:p.karana.type==='movable'?'подвижная':'фикс.',c:p.karana.q>=4?'#1e6b3d':p.karana.q>=3?'#6e2806':'#8a1a1e'}
+    ].forEach(function(it){
+      h+='<div class="pk"><div class="pk-l">'+it.l+'</div><div class="pk-v" style="color:'+it.c+'">'+esc(it.v)+'</div><div class="pk-s">'+it.sub+'</div></div>';
+    });
+    h+='</div>';
+    h+='<div style="margin-top:.6rem;font-size:.72rem;color:#9e7840;padding:.35rem .6rem;background:rgba(158,120,64,.08);border-radius:6px">'+esc(p.nakshatra.sym)+' '+esc(p.nakshatra.name)+' — '+esc(p.nakshatra.nature)+' &middot; '+esc(p.nakshatra.quality)+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function buildAdvancedFilter(){
+  var f=S.filter;
+  var activeCount=f.tithis.length+f.naks.length+f.varas.length+f.nakQuals.length+f.karanas.length+(f.minScore>0?1:0);
+  var h='<div style="margin-top:.9rem;border-top:1px solid rgba(180,140,60,.18);padding-top:.8rem">';
+
+  // Lunar days — always visible
+  h+='<div class="filter-section">';
+  h+='<div class="filter-lbl">Лунные сутки <span style="font-weight:400;font-size:.65rem;color:#9e7840">(пусто = любые)</span></div>';
+  var tN=['Прати','Двити','Трити','Чатур','Панча','Шаштхи','Саптами','Аштами','Навами','Дашами','Экада','Двада','Трайод','Чатурд','Пурнима'];
+  var kN=['Прати','Двити','Трити','Чатур','Панча','Шаштхи','Саптами','Аштами','Навами','Дашами','Экада','Двада','Трайод','Чатурд','Амавасья'];
+  var tBad=[7,8,13,14];
+  h+='<div style="font-size:.65rem;color:#9e7840;margin-bottom:.25rem">Шукла (растущая):</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:.2rem;margin-bottom:.35rem">';
+  for(var ti=0;ti<=14;ti++){
+    var on=f.tithis.indexOf(ti)>=0;
+    var isBad=tBad.indexOf(ti)>=0;
+    h+='<span class="ftag'+(isBad?' ftag-bad':'')+(on?' on':'')+'" data-ftithi="'+ti+'" title="'+tN[ti]+' ('+(ti+1)+' л.с.)">'+tN[ti]+'<br><small style="font-size:.52rem;opacity:.75">'+(ti+1)+'</small></span>';
+  }
+  h+='</div>';
+  h+='<div style="font-size:.65rem;color:#9e7840;margin-bottom:.25rem">Кришна (убывающая):</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:.2rem">';
+  for(var ti2=15;ti2<=29;ti2++){
+    var on2=f.tithis.indexOf(ti2)>=0;
+    var isBad2=tBad.indexOf(ti2%15)>=0||ti2===29;
+    h+='<span class="ftag'+(isBad2?' ftag-bad':'')+(on2?' on':'')+'" data-ftithi="'+ti2+'" title="'+kN[ti2-15]+' ('+(ti2-14)+' л.с.)">'+kN[ti2-15]+'<br><small style="font-size:.52rem;opacity:.75">'+(ti2-14)+'</small></span>';
+  }
+  h+='</div></div>';
+
+  // Nakshatra names — always visible
+  h+='<div class="filter-section">';
+  h+='<div class="filter-lbl">Накшатра <span style="font-weight:400;font-size:.65rem;color:#9e7840">(пусто = любая)</span></div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:.2rem">';
+  var nakBad=[1,8,9,17,18,24];
+  NAKSHATRAS.forEach(function(n,i){
+    var on=f.naks.indexOf(i)>=0;
+    var isBad=nakBad.indexOf(i)>=0;
+    h+='<span class="ftag'+(isBad?' ftag-bad':'')+(on?' on':'')+'" data-fnak="'+i+'" title="'+n.lord+' · '+n.quality+'">'+n.sym+' '+n.name+'</span>';
+  });
+  h+='</div></div>';
+
+  // Collapsible advanced
+  h+='<div class="filter-toggle" id="filterToggle" style="margin-top:.5rem">';
+  h+='<span style="font-size:.9rem">'+(S.filterOpen?'▾':'▸')+'</span>';
+  h+='<span>Дополнительные фильтры</span>';
+  var advCount=f.varas.length+f.nakQuals.length+f.karanas.length+(f.minScore>0?1:0);
+  if(advCount>0) h+='<span style="background:#6e2806;color:#fff;font-size:.6rem;padding:.1rem .4rem;border-radius:99px">'+advCount+'</span>';
+  h+='</div>';
+
+  if(S.filterOpen){
+    h+='<div class="filter-panel">';
+    h+='<div class="filter-section"><div class="filter-lbl">День недели</div><div style="display:flex;flex-wrap:wrap;gap:.15rem">';
+    VARAS.forEach(function(v,i){
+      var on=f.varas.indexOf(i)>=0;
+      h+='<span class="ftag'+(on?' on':'')+'" data-fvara="'+i+'">'+v.short+'</span>';
+    });
+    h+='</div></div>';
+    h+='<div class="filter-section"><div class="filter-lbl">Качество накшатры</div><div style="display:flex;flex-wrap:wrap;gap:.2rem">';
+    [['Кшипра','быстрая'],['Лагху','лёгкая'],['Мриду','мягкая'],['Стхира','постоянная'],['Чара','подвижная'],['Мишра','смешанная'],['Угра','жёсткая'],['Тикшна','острая']].forEach(function(q){
+      var on=f.nakQuals.indexOf(q[0])>=0;
+      var isBad=q[0]==='Угра'||q[0]==='Тикшна';
+      h+='<span class="ftag'+(isBad?' ftag-bad':'')+(on?' on':'')+' " data-fnakqual="'+q[0]+'">'+q[0]+' <span style="font-size:.62rem;opacity:.75;font-weight:400">('+q[1]+')</span></span>';
+    });
+    h+='</div></div>';
+    h+='<div class="filter-section"><div class="filter-lbl">Карана</div><div style="display:flex;flex-wrap:wrap;gap:.15rem">';
+    KARANAS.forEach(function(k,i){
+      var on=f.karanas.indexOf(i)>=0;
+      var isBad=k.q<=2;
+      h+='<span class="ftag'+(isBad?' ftag-bad':'')+(on?' on':'')+'" data-fkarana="'+i+'" title="'+k.desc+'">'+k.name+'</span>';
+    });
+    h+='</div></div>';
+    h+='</div>';
+  }
+
+  if(activeCount>0) h+='<div style="text-align:right;margin-top:.4rem"><span class="filter-clear" id="filterClear">&#10006; сбросить фильтры</span></div>';
+  h+='</div>';
+  return h;
+}
+
+function buildDayEnergy(p){
+  var score=0;
+  // Nakshatra quality — основной фактор (вес ~0-2.5)
+  var nqMap={'\u041a\u0448\u0438\u043f\u0440\u0430':5,'\u041b\u0430\u0433\u0445\u0443':5,'\u041c\u0440\u0438\u0434\u0443':4,'\u0421\u0442\u0445\u0438\u0440\u0430':4,'\u0427\u0430\u0440\u0430':3,'\u041c\u0438\u0448\u0440\u0430':3,'\u0423\u0433\u0440\u0430':2,'\u0422\u0438\u043a\u0448\u043d\u0430':1};
+  var nq=nqMap[p.nakshatra.quality]||3;
+  score+=nq*0.50;  // 0–2.5 pts
+
+  // Tithi quality (вес ~0-2.0)
+  score+=p.tithiQ*0.40;
+
+  // Karana (вес ~0-1.1)
+  score+=p.karana.q*0.22;
+
+  // Yoga (вес ~0-0.9)
+  score+=p.yoga.s*0.18;
+
+  // Vara — вторичный фактор (вес ~0-1.0)
+  score+=p.vara.score*0.20;
+
+  // Штрафы
+  if(TITHI_BLOCKED.indexOf(p.tIdx)>=0) score-=1.5;
+  if(YOGA_BLOCKED.indexOf(p.yIdx)>=0) score-=1.0;
+
+  // Персональные поправки (Тара Бала + Чандра Бала)
+  var taraBonus=0, chandraBonus=0, personalNote='';
+  if(S.birthNak>=0){
+    var tb=tarabala(p.nIdx);
+    if(tb){
+      if(tb.good){taraBonus=1.2; personalNote='Тара: '+tb.name+' ✓';}
+      else if(tb.bad){taraBonus=-1.2; personalNote='Тара: '+tb.name+' ✗';}
+      else{personalNote='Тара: '+tb.name;}
+    }
+    var cb=chandrabala(p.nIdx);
+    if(cb&&cb.good) chandraBonus=0.8;
+    else if(cb&&!cb.good) chandraBonus=-0.5;
+  }
+  score=Math.max(0,Math.min(10,score+taraBonus+chandraBonus));
+
+  var catScores=[];
+  CATEGORIES.forEach(function(cat){
+    var s=0;
+    if(cat.events&&cat.events.length){
+      var ev0=cat.events[0];
+      if(ev0.varaGood&&ev0.varaGood.indexOf(p.dow)>=0) s+=1.5;
+      if(ev0.varaBad&&ev0.varaBad.indexOf(p.dow)>=0) s-=1.5;
+      if(ev0.naksGood&&ev0.naksGood.indexOf(p.nIdx)>=0) s+=2;
+      if(ev0.naksBad&&ev0.naksBad.indexOf(p.nIdx)>=0) s-=2;
+      if(ev0.tithiGood&&ev0.tithiGood.indexOf(p.tIdx%15)>=0) s+=1;
+      if(ev0.tithiBad&&ev0.tithiBad.indexOf(p.tIdx)>=0) s-=1;
+    }
+    s+=score*0.5;
+    s=Math.max(0,Math.min(10,s));
+    catScores.push({cat:cat,s:s});
+  });
+  catScores.sort(function(a,b){return b.s-a.s;});
+  var good=catScores.filter(function(x){return x.s>=6;});
+  var avoid=catScores.filter(function(x){return x.s<4;});
+  var neutral=catScores.filter(function(x){return x.s>=4&&x.s<6;});
+
+  var ld=p.lunarDay;
+  var phase='';
+  if(ld<=3) phase='\u041d\u043e\u0432\u043e\u043b\u0443\u043d\u0438\u0435 \u2014 \u0432\u0440\u0435\u043c\u044f \u0437\u0430\u043c\u044b\u0441\u043b\u043e\u0432 \u0438 \u043f\u043e\u0441\u0435\u0432\u043e\u0432';
+  else if(ld<=7) phase='\u0420\u0430\u0441\u0442\u0443\u0449\u0430\u044f \u041b\u0443\u043d\u0430 \u2014 \u0441\u0442\u0430\u0440\u0442 \u0438 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0435';
+  else if(ld<=11) phase='\u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0439 \u0440\u043e\u0441\u0442 \u2014 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u0438 \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u0435';
+  else if(ld<=14) phase='\u041f\u0435\u0440\u0435\u0434 \u043f\u043e\u043b\u043d\u043e\u043b\u0443\u043d\u0438\u0435\u043c \u2014 \u043f\u0438\u043a \u044d\u043d\u0435\u0440\u0433\u0438\u0438';
+  else if(ld===15) phase='\u041f\u0443\u0440\u043d\u0438\u043c\u0430 (\u041f\u043e\u043b\u043d\u043e\u043b\u0443\u043d\u0438\u0435) \u2014 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0438\u0435 \u0438 \u043f\u0438\u043a';
+  else if(ld<=17) phase='\u0423\u0431\u044b\u0432\u0430\u044e\u0449\u0430\u044f \u041b\u0443\u043d\u0430 \u2014 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0438\u0435 \u043d\u0430\u0447\u0430\u0442\u043e\u0433\u043e';
+  else if(ld<=22) phase='\u0423\u0431\u044b\u0432\u0430\u044e\u0449\u0430\u044f \u041b\u0443\u043d\u0430 \u2014 \u0430\u043d\u0430\u043b\u0438\u0437 \u0438 \u043a\u043e\u0440\u0440\u0435\u043a\u0446\u0438\u044f';
+  else if(ld<=28) phase='\u0422\u0451\u043c\u043d\u0430\u044f \u041b\u0443\u043d\u0430 \u2014 \u043e\u0442\u0434\u044b\u0445 \u0438 \u0432\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u044f\u044f \u0440\u0430\u0431\u043e\u0442\u0430';
+  else phase='\u0410\u043c\u0430\u0432\u0430\u0441\u044c\u044f \u2014 \u0432\u0440\u0435\u043c\u044f \u043e\u0447\u0438\u0449\u0435\u043d\u0438\u044f';
+
+  var scoreColor=score>=7?'#1e6b3d':score>=5?'#7a5e00':score>=3?'#c8600a':'#8a1a1e';
+  var scoreLbl=score>=7?'\u041e\u0442\u043b\u0438\u0447\u043d\u0430\u044f':score>=5?'\u0425\u043e\u0440\u043e\u0448\u0430\u044f':score>=3?'\u041d\u0435\u0439\u0442\u0440\u0430\u043b\u044c\u043d\u0430\u044f':'\u0421\u043b\u0430\u0431\u0430\u044f';
+  var pct=Math.round(score/10*100);
+
+  var h='<div class="card" style="border-left:4px solid '+scoreColor+'">';
+  h+='<div class="ct">&#9728; \u042d\u043d\u0435\u0440\u0433\u0438\u044f \u0434\u043d\u044f</div>';
+  // Circle + info side by side
+  h+='<div style="display:flex;align-items:center;gap:1rem;margin-bottom:.8rem">';
+  h+=scoreCircleSVG(score,72);
+  h+='<div style="flex:1">';
+  h+='<div style="font-size:.78rem;font-weight:600;color:'+scoreColor+'">'+scoreLbl+'</div>';
+  h+='<div style="font-size:.7rem;color:#9e7840;margin-top:.15rem">'+esc(p.vara.name)+' &middot; '+esc(p.nakshatra.name)+'</div>';
+  h+='<div style="font-size:.7rem;color:#9e7840">'+p.lunarDay+' \u043b.\u0441. &middot; '+p.paksha+' &middot; '+esc(p.karana.name)+'</div>';
+  h+='</div></div>';
+  h+='<div style="font-size:.75rem;color:#9e7840;margin-bottom:.75rem;padding:.35rem .6rem;background:rgba(158,120,64,.08);border-radius:6px;">&#9405; '+phase+'</div>';
+  if(good.length>0){
+    h+='<div style="margin-bottom:.6rem"><div style="font-size:.7rem;font-weight:700;color:#1e6b3d;margin-bottom:.3rem">&#10003; \u0425\u043e\u0440\u043e\u0448\u043e \u043f\u043e\u0434\u0445\u043e\u0434\u0438\u0442 \u0434\u043b\u044f:</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem">';
+    good.forEach(function(x){h+='<span style="font-size:.68rem;background:rgba(30,107,61,.1);color:#1e6b3d;border-radius:4px;padding:.15rem .45rem">'+x.cat.icon+' '+esc(x.cat.label)+'</span>';});
+    h+='</div></div>';
+  }
+  if(neutral.length>0){
+    h+='<div style="margin-bottom:.6rem"><div style="font-size:.7rem;font-weight:700;color:#7a5e00;margin-bottom:.3rem">~ \u041d\u0435\u0439\u0442\u0440\u0430\u043b\u044c\u043d\u043e:</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem">';
+    neutral.forEach(function(x){h+='<span style="font-size:.68rem;background:rgba(122,94,0,.08);color:#7a5e00;border-radius:4px;padding:.15rem .45rem">'+x.cat.icon+' '+esc(x.cat.label)+'</span>';});
+    h+='</div></div>';
+  }
+  if(avoid.length>0){
+    h+='<div><div style="font-size:.7rem;font-weight:700;color:#8a1a1e;margin-bottom:.3rem">&#10007; \u041b\u0443\u0447\u0448\u0435 \u043e\u0442\u043b\u043e\u0436\u0438\u0442\u044c:</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem">';
+    avoid.forEach(function(x){h+='<span style="font-size:.68rem;background:rgba(138,26,30,.08);color:#8a1a1e;border-radius:4px;padding:.15rem .45rem">'+x.cat.icon+' '+esc(x.cat.label)+'</span>';});
+    h+='</div></div>';
+  }
+  h+='</div>';
+  return {html:h,score:score};
+}
+
+function buildSingleResults(){
+  if(!S.singleRes||S.mode!=='single') return '';
+  var r=S.singleRes,p=r.p,cs=r.cs,city=r.city,ev=r.ev;
+  var h='<div class="orn">&#10056; &#10056; &#10056;</div>';
+
+  // sunrise row
+  h+='<div class="card"><div class="srrow">';
+  h+='<div class="srit">&#127749; Восход <strong>'+fmt(p.sunrise)+'</strong></div>';
+  h+='<div class="srit">&#127751; Закат <strong>'+fmt(p.sunset)+'</strong></div>';
+  h+='<div class="srit">&#9728; Полдень <strong>'+fmt(p.noon)+'</strong></div>';
+  h+='<div class="srit">&#128205; '+esc(city.name)+'</div>';
+  h+='<div class="srit" style="margin-left:auto;font-size:.68rem;color:#9e7840">УВ: '+(p.EqT>=0?'+':'')+p.EqT.toFixed(1)+' мин &middot; Аян. '+p.ay.toFixed(2)+'&deg;</div>';
+  h+='</div></div>';
+
+  // panchanga
+  h+='<div class="card"><div class="ct">Панчанга - '+esc(new Date(r.date).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}))+'</div>';
+  h+='<div class="g5">';
+  var items=[
+    {l:'Вара',v:p.vara.name,sub:p.vara.lord,c:p.vara.color},
+    {l:'Титхи',v:p.tithi,sub:p.lunarDay+' л.с. \u00b7 '+p.paksha,c:'#6e2806'},
+    {l:'Накшатра',v:p.nakshatra.name,sub:'\u043f\u0430\u0434\u0430 '+p.nPada+'\u00b7'+p.nakshatra.lord,c:'#6e2806'},
+    {l:'Йога',v:p.yoga.name,sub:stars(Math.round(p.yoga.s/2)),c:'#6e2806'},
+    {l:'Карана',v:p.karana.name,sub:p.karana.type==='movable'?'\u043f\u043e\u0434\u0432\u0438\u0436\u043d\u0430\u044f':'\u0444\u0438\u043a\u0441\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f',c:p.karana.q>=4?'#1e6b3d':p.karana.q>=3?'#6e2806':'#8a1a1e'}
+  ];
+  items.forEach(function(it){
+    h+='<div class="pk"><div class="pk-l">'+it.l+'</div><div class="pk-v" style="color:'+it.c+'">'+esc(it.v)+'</div><div class="pk-s">'+it.sub+'</div></div>';
+  });
+  h+='</div>';
+  // lunar position row
+  h+='<div class="nkd"><div style="font-size:1.9rem;line-height:1">'+p.nakshatra.sym+'</div>';
+  h+='<div style="flex:1"><div class="nk-name">'+esc(p.nakshatra.name)+'</div>';
+  h+='<div style="font-size:.7rem;color:#9e7840;margin-top:.1rem">&#9405; '+p.mS.toFixed(2)+'&deg; (сидер.) &middot; '+Math.round(p.nFrac*100)+'% пройдено &middot; пада '+p.nPada+'</div>';
+  h+='<div class="nk-meta"><span class="nkb">'+p.nakshatra.lord+'</span><span class="nkb">'+p.nakshatra.nature+'</span><span class="nkb">'+p.nakshatra.quality+'</span></div>';
+  h+='</div></div>';
+  // karana info
+  h+='<div style="margin-top:.55rem;padding:.45rem .7rem;background:rgba(200,96,10,.05);border-radius:6px;border-left:3px solid '+(p.karana.q>=4?'#1e6b3d':p.karana.q>=3?'#c8600a':'#8a1a1e')+';">';
+  h+='<span style="font-size:.7rem;color:#9e7840">Карана:</span> <strong style="color:#6e2806">'+esc(p.karana.name)+'</strong> <span style="font-size:.72rem;color:#9e7840">— '+esc(p.karana.desc)+'</span>';
+  h+='</div>';
+  h+='</div>';
+
+  // score
+  h+='<div class="card"><div class="ct">Оценка времени '+esc(r.time)+' - «'+esc(ev.label||ev.id)+'»</div>';
+  h+='<div class="scw">'+scoreCircleSVG(cs.block?0:cs.s)+'<div class="scrs">';
+  if(cs.block){
+    h+='<div class="warn"><strong>&#9888; '+esc(cs.tag)+'</strong>Перенесите начало события.</div>';
+  } else if(cs.reasons&&cs.reasons.length>0){
+    cs.reasons.forEach(function(rr){
+      var pos=rr.indexOf('✓')>=0||rr.indexOf('✦')>=0;
+      h+='<div class="scr"><span>'+esc(rr)+'</span><span style="color:'+(pos?'#1e6b3d':'#8a1a1e')+';font-weight:700">'+(pos?'+':'-')+'</span></div>';
+    });
+  } else {
+    h+='<div style="font-size:.8rem;color:#9e7840">Время нейтральное.</div>';
+  }
+  h+='</div></div></div>';
+
+  // timeline
+  h+='<div class="card"><div class="ct">Карта дня по часам</div><div class="tlb">';
+  r.slots.forEach(function(x){
+    var bg=x.block?'#fdd':'hsl('+(x.s*13)+','+(50+x.s*3)+'%,'+(32+x.s*3)+'%)';
+    h+='<div class="tls" style="background:'+bg+'"><div class="tlt">'+fmt(x.h)+'-'+fmt(x.h+.5)+'<br>'+(x.block?esc(x.tag):lbl(x.s)+' '+x.s.toFixed(1))+'</div></div>';
+  });
+  h+='</div>';
+  if(r.slots.length>0){
+    var s0=r.slots[0].h,sN=r.slots[r.slots.length-1].h;
+    h+='<div class="tll"><span>'+fmt(s0)+'</span><span>'+fmt(s0+(sN-s0)/4)+'</span><span>'+fmt(s0+(sN-s0)/2)+'</span><span>'+fmt(s0+3*(sN-s0)/4)+'</span><span>'+fmt(sN)+'</span></div>';
+  }
+  h+='</div>';
+
+  // periods
+  h+='<div class="card"><div class="ct">Особые периоды</div><div class="g3">';
+  h+='<div class="inaus"><div class="in-l">&#9791; Раху Кала</div><div class="in-t">'+fmt(p.rahu.start)+'-'+fmt(p.rahu.end)+'</div><div class="in-n">Не начинать дел</div></div>';
+  h+='<div class="inaus"><div class="in-l">&#9796; Гулика Кала</div><div class="in-t">'+fmt(p.gulik.start)+'-'+fmt(p.gulik.end)+'</div><div class="in-n">Период Сатурна</div></div>';
+  h+='<div class="inaus good-p"><div class="in-l">✦ Абхиджит</div><div class="in-t">'+fmt(p.abh.start)+'-'+fmt(p.abh.end)+'</div><div class="in-n">Лучший период</div></div>';
+  h+='</div></div>';
+
+  // best slots
+  var best=r.slots.filter(function(x){return !x.block&&x.s>=5;}).sort(function(a,b){return b.s-a.s;}).slice(0,4);
+  if(best.length>0){
+    h+='<div class="card"><div class="ct">Лучшие окна дня</div><div class="slg">';
+    best.forEach(function(x,i){
+      h+='<div class="slot" style="border-color:'+(i===0?'#c8600a':'rgba(180,140,60,.22)')+';background:'+(i===0?'#fef4e2':'#faf6ef')+'">';
+      if(i===0) h+='<div class="sl-top">✦ ЛУЧШЕЕ ВРЕМЯ</div>';
+      h+='<div class="sl-t">'+fmt(x.h)+' - '+fmt(x.h+.5)+'</div>';
+      h+='<div class="sl-s" style="color:'+col(x.s)+'">'+lbl(x.s)+' &middot; '+x.s.toFixed(1)+'/10</div>';
+      h+='<div class="sl-tags">';
+      (x.reasons||[]).forEach(function(rr){h+='<span class="stag">'+esc(rr)+'</span>';});
+      h+='</div></div>';
+    });
+    h+='</div></div>';
+  }
+  h+='<div class="orn mt2">Звёзды указывают путь — выбор всегда за вами</div>';
+  return h;
+}
+
+function buildDayDetailInline(day){
+  var p=day.p;
+  var city=CITIES[S.cIdx];
+  var defaultEv={naksGood:[],naksBad:[],tithiGood:[],tithiBad:[],varaGood:[0,1,2,3,4,5,6],varaBad:[],yogaGood:[]};
+  var ev=canCalc()?resolveEv():null;
+  if(!ev) ev=defaultEv;
+  var slots=day.slots||getDaySlots(day.ds,city,ev);
+  var best2=slots.filter(function(x){return !x.block&&x.s>=3.5;}).sort(function(a,b){return b.s-a.s;}).slice(0,5);
+  var h='<div class="day-detail">';
+  h+='<div class="g5" style="margin-bottom:.7rem">';
+  [{l:'Вара',v:p.vara.name,sub:p.vara.lord,c:p.vara.color},
+   {l:'Титхи',v:p.tithi,sub:p.lunarDay+' л.с. \u00b7 '+p.paksha,c:'#6e2806'},
+   {l:'Накшатра',v:p.nakshatra.name,sub:'\u043f\u0430\u0434\u0430 '+p.nPada,c:'#6e2806'},
+   {l:'Йога',v:p.yoga.name,sub:stars(Math.round(p.yoga.s/2)),c:'#6e2806'},
+   {l:'Карана',v:p.karana.name,sub:p.karana.type==='movable'?'\u043f\u043e\u0434\u0432\u0438\u0436\u043d\u0430\u044f':'\u0444\u0438\u043a\u0441.',c:p.karana.q>=4?'#1e6b3d':p.karana.q>=3?'#6e2806':'#8a1a1e'}
+  ].forEach(function(it){
+    h+='<div class="pk"><div class="pk-l">'+it.l+'</div><div class="pk-v" style="color:'+it.c+'">'+esc(it.v)+'</div><div class="pk-s">'+it.sub+'</div></div>';
+  });
+  h+='</div>';
+  // Personal Bala if birth profile set
+  if(S.birthNak>=0){
+    var tb2=tarabala(p.nIdx);
+    var cb2=chandrabala(p.nIdx);
+    if(tb2||cb2){
+      h+='<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">';
+      if(tb2){
+        var tc=tb2.good?'#1e6b3d':tb2.bad?'#8a1a1e':'#9e7840';
+        h+='<div style="font-size:.7rem;padding:.3rem .6rem;border-radius:6px;background:rgba(158,120,64,.08);border:1px solid rgba(180,140,60,.2)">';
+        h+='<span style="color:#9e7840">Тара Бала: </span><span style="color:'+tc+';font-weight:600">'+tb2.name+(tb2.good?' ✓':tb2.bad?' ✗':'')+'</span>';
+        h+='</div>';
+      }
+      if(cb2){
+        var cc=cb2.good?'#1e6b3d':'#8a1a1e';
+        h+='<div style="font-size:.7rem;padding:.3rem .6rem;border-radius:6px;background:rgba(158,120,64,.08);border:1px solid rgba(180,140,60,.2)">';
+        h+='<span style="color:#9e7840">Чандра Бала: </span><span style="color:'+cc+';font-weight:600">'+(cb2.good?'Сильная ✓':'Слабая ✗')+'</span>';
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+  }
+  h+='<div class="g3" style="margin-bottom:.7rem">';
+  h+='<div class="inaus"><div class="in-l">&#9791; \u0420\u0430\u0445\u0443 \u041a\u0430\u043b\u0430</div><div class="in-t">'+fmt(p.rahu.start)+'-'+fmt(p.rahu.end)+'</div></div>';
+  h+='<div class="inaus"><div class="in-l">&#9796; \u0413\u0443\u043b\u0438\u043a\u0430</div><div class="in-t">'+fmt(p.gulik.start)+'-'+fmt(p.gulik.end)+'</div></div>';
+  h+='<div class="inaus good-p"><div class="in-l">\u2736 \u0410\u0431\u0445\u0438\u0434\u0436\u0438\u0442</div><div class="in-t">'+fmt(p.abh.start)+'-'+fmt(p.abh.end)+'</div></div>';
+  h+='</div>';
+  if(best2.length>0){
+    h+='<div class="slot-list">';
+    best2.forEach(function(x,i){
+      var slotId='slot-'+day.ds.replace(/-/g,'')+'-'+i;
+      var isOpen=S.openSlot===slotId||(i===0&&S.openSlot===undefined);
+      var bc=i===0?'#c8600a':'rgba(180,140,60,.3)';
+      var bg=i===0?'#fef4e2':'#faf6ef';
+      h+='<div style="border:1.5px solid '+bc+';border-radius:9px;margin-bottom:.4rem;overflow:hidden;background:'+bg+'">';
+      // Header row - always visible, clickable
+      h+='<div class="slot-hdr" data-slot="'+slotId+'" style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;cursor:pointer">';
+      h+='<div style="display:flex;align-items:center;gap:.6rem">';
+      if(i===0) h+='<span style="font-size:.58rem;font-weight:700;letter-spacing:.06em;color:#c8600a">\u2736 \u041b\u0423\u0427\u0428\u0415\u0415</span>';
+      h+='<span class="sl-t" style="font-size:1rem;font-weight:700">'+fmt(x.h)+' \u2013 '+fmt(x.h+.5)+'</span>';
+      h+='</div>';
+      h+='<div style="display:flex;align-items:center;gap:.5rem">';
+      h+='<span style="font-size:.72rem;color:'+col(x.s)+';font-weight:600">'+x.s.toFixed(1)+'/10</span>';
+      h+='<span style="color:#9e7840;font-size:.8rem">'+(isOpen?'&#9650;':'&#9660;')+'</span>';
+      h+='</div>';
+      h+='</div>';
+      // Body - only visible when open
+      if(isOpen){
+        h+='<div style="padding:.1rem .75rem .6rem;border-top:1px solid rgba(180,140,60,.15)">';
+        h+='<div style="font-size:.72rem;color:'+col(x.s)+';margin-bottom:.35rem">'+lbl(x.s)+'</div>';
+        h+='<div class="sl-tags">';
+        (x.reasons||[]).forEach(function(rr){h+='<span class="stag">'+esc(rr)+'</span>';});
+        h+='</div></div>';
+      }
+      h+='</div>';
+    });
+    h+='</div>';
+  } else {
+    h+='<div style="font-size:.75rem;color:#9e7840;padding:.4rem 0">\u0411\u043b\u0430\u0433\u043e\u043f\u0440\u0438\u044f\u0442\u043d\u044b\u0445 \u043e\u043a\u043e\u043d (\u2265\u00a05.0) \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e \u2014 \u043f\u0440\u043e\u0432\u0435\u0440\u044c\u0442\u0435 \u0431\u043e\u043b\u0435\u0435 \u043d\u0438\u0437\u043a\u0438\u0439 \u043f\u043e\u0440\u043e\u0433</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function buildRangeResults(){
+  if(!S.rangeRes||S.mode!=='range') return '';
+  var rr=S.rangeRes;
+  var h='<div class="orn">&#10056; &#10056; &#10056;</div>';
+  h+='<div class="card"><div class="ct">\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b - «'+esc(rr.ev.label||rr.ev.id)+'» &middot; '+esc(rr.city.name)+'</div>';
+  h+='<div class="range-top">\u041f\u0440\u043e\u0432\u0435\u0440\u0435\u043d\u043e '+rr.totalDays+' \u0434\u043d.'+(rr.filtered?' &middot; <span style="color:#6e2806;font-weight:600">&#128270; \u0424\u0438\u043b\u044c\u0442\u0440 \u0430\u043a\u0442\u0438\u0432\u0435\u043d — '+rr.sorted.length+' \u0434\u043d. \u043f\u0440\u043e\u0448\u043b\u0438</span>':' &middot; \u0425\u043e\u0440\u043e\u0448\u0438\u0445 (&ge;6.0): <strong style="color:#1e6b3d">'+rr.sorted.filter(function(x){return x.dayScore>=6;}).length+'</strong>')+' &middot; \u0422\u043e\u043f-10</div>';
+  h+='<div class="day-cards">';
+  rr.sorted.slice(0,10).forEach(function(day,i){
+    var p=day.p,cl=col(day.dayScore),sel=S.selectedDay===day.dateStr;
+    h+='<div class="day-card'+(sel?' sel':'')+'" data-day="'+day.dateStr+'" style="border-left:'+(i<3?'3px solid '+cl:'')+'">';
+    h+='<div class="day-card-header">';
+    h+='<div class="day-rank'+(i<3?' top':'')+'">#'+(i+1)+'</div>';
+    h+='<div style="flex:1">';
+    h+='<div class="day-date">'+esc(fmtDate(day.dateStr))+'</div>';
+    h+='<div class="day-sub">'+p.nakshatra.sym+' '+esc(p.nakshatra.name)+' &middot; '+esc(p.tithi)+' ('+p.lunarDay+' \u043b.\u0441.) &middot; '+esc(p.vara.name);
+    if(day.bestSlot) h+=' <span style="color:#c8600a;font-weight:600">&middot; \u041b\u0443\u0447\u0448\u0435\u0435: '+fmt(day.bestSlot.h)+'-'+fmt(day.bestSlot.h+0.5)+'</span>';
+    h+='</div>';
+    if(day.bestSlot&&day.bestSlot.reasons){
+      h+='<div class="day-tags">';
+      day.bestSlot.reasons.slice(0,3).forEach(function(rr2){h+='<span class="dtag">'+esc(rr2)+'</span>';});
+      h+='</div>';
+    }
+    h+='</div>';
+    h+='<div style="display:flex;align-items:center;gap:.5rem">';
+    h+='<div class="day-score"><div class="day-score-num" style="color:'+cl+'">'+day.dayScore.toFixed(1)+'</div><div class="day-score-lbl">'+lbl(day.dayScore)+'</div></div>';
+    h+='<span style="color:#9e7840;font-size:.85rem">'+(sel?'&#9650;':'&#9660;')+'</span>';
+    h+='</div>';
+    h+='</div>';
+    if(sel) h+=buildDayDetailInline(day);
+    h+='</div>';
+  });
+  h+='</div></div>';
+  h+='<div class="orn mt2">\u0417\u0432\u0451\u0437\u0434\u044b \u0443\u043a\u0430\u0437\u044b\u0432\u0430\u044e\u0442 \u043f\u0443\u0442\u044c \u2014 \u0432\u044b\u0431\u043e\u0440 \u0432\u0441\u0435\u0433\u0434\u0430 \u0437\u0430 \u0432\u0430\u043c\u0438</div>';
+  return h;
+}
+
+
+// --- CALENDAR -----------------------------------------------------------------
+function buildCalendar(){
+  if(S.mode!=='calendar') return '';
+  var city=CITIES[S.cIdx];
+  var yr=S.calYear, mo=S.calMonth;
+  var monthNames=['\u042f\u043d\u0432\u0430\u0440\u044c','\u0424\u0435\u0432\u0440\u0430\u043b\u044c','\u041c\u0430\u0440\u0442','\u0410\u043f\u0440\u0435\u043b\u044c','\u041c\u0430\u0439','\u0418\u044e\u043d\u044c','\u0418\u044e\u043b\u044c','\u0410\u0432\u0433\u0443\u0441\u0442','\u0421\u0435\u043d\u0442\u044f\u0431\u0440\u044c','\u041e\u043a\u0442\u044f\u0431\u0440\u044c','\u041d\u043e\u044f\u0431\u0440\u044c','\u0414\u0435\u043a\u0430\u0431\u0440\u044c'];
+  var daysInMonth=new Date(yr,mo+1,0).getDate();
+  var firstDow=(new Date(yr,mo,1).getDay()+6)%7; // Mon=0
+
+  // Precompute all days + event slots if event selected
+  var hasEv=canCalc();
+  var ev2=hasEv?resolveEv():null;
+  var days=[];
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=yr+'-'+(mo+1<10?'0':'')+(mo+1)+'-'+(d<10?'0':'')+d;
+    var p=calcP(ds,12,city);
+    var de=buildDayEnergy(p);
+    var daySlots=null, goodWindows=0;
+    if(hasEv&&ev2){
+      daySlots=getDaySlots(ds,city,ev2);
+      goodWindows=daySlots.filter(function(x){return !x.block&&x.s>=3.5;}).length;
+    }
+    days.push({d:d,ds:ds,p:p,score:de.score,slots:daySlots,goodWindows:goodWindows});
+  }
+
+  var h='<div class="card">';
+  // Nav
+  h+='<div class="cal-nav">';
+  h+='<button data-caldir="-1">&#9664; Пред.</button>';
+  h+='<div style="font-size:.9rem;font-weight:700;color:#6e2806">'+monthNames[mo]+' '+yr+'</div>';
+  h+='<button data-caldir="1">След. &#9654;</button>';
+  h+='</div>';
+  // Day headers Mon-Sun
+  ['\u041f\u043d','\u0412\u0442','\u0421\u0440','\u0427\u0442','\u041f\u0442','\u0421\u0431','\u0412\u0441'].forEach(function(d){
+    h+='<div class="cal-head">'+d+'</div>';
+  });
+  // Wait — grid starts in cal-grid
+  h='<div class="card"><div class="cal-nav"><button data-caldir="-1">&#9664; \u041f\u0440\u0435\u0434.</button><div style="font-size:.9rem;font-weight:700;color:#6e2806">'+monthNames[mo]+' '+yr+'</div><button data-caldir="1">\u0421\u043b\u0435\u0434. &#9654;</button></div>';
+  h+='<div class="cal-grid">';
+  ['\u041f\u043d','\u0412\u0442','\u0421\u0440','\u0427\u0442','\u041f\u0442','\u0421\u0431','\u0412\u0441'].forEach(function(d){
+    h+='<div class="cal-head">'+d+'</div>';
+  });
+  // Empty cells
+  for(var e=0;e<firstDow;e++) h+='<div class="cal-day empty"></div>';
+  // Days
+  days.forEach(function(day){
+    var sc=day.score;
+    var bg=sc>=7?'rgba(30,107,61,.14)':sc>=5?'rgba(90,138,26,.10)':sc>=3?'rgba(200,96,10,.09)':'rgba(138,26,30,.09)';
+    var borderC=sc>=7?'rgba(30,107,61,.4)':sc>=5?'rgba(90,138,26,.28)':sc>=3?'rgba(200,96,10,.22)':'rgba(138,26,30,.22)';
+    var dotc=sc>=7?'#1e6b3d':sc>=5?'#5a8a1a':sc>=3?'#c8600a':'#8a1a1e';
+    var sel=S.selectedDay===day.ds;
+    var isToday=day.ds===today;
+    h+='<div class="cal-day'+(sel?' sel':'')+' " data-day="'+day.ds+'" style="background:'+bg+';border:1px solid '+(sel?'#c8600a':borderC)+';'+(isToday?'outline:2px solid #c8600a;outline-offset:-2px;':'')+'">'; 
+    h+='<div class="cal-num" style="color:'+dotc+';font-weight:700">'+(isToday?'<u>':'')+day.d+(isToday?'</u>':'')+'</div>';
+    h+='<div class="cal-dot" style="background:'+dotc+'" title="'+sc.toFixed(1)+'/10"></div>';
+    h+='<div class="cal-nak" style="font-size:.55rem;color:'+dotc+';opacity:.9">'+day.p.nakshatra.sym+' '+day.p.nakshatra.name.slice(0,5)+'</div>';
+    h+='<div class="cal-ls" style="font-size:.5rem">'+day.p.lunarDay+' л.с. · '+sc.toFixed(1)+'</div>';
+    h+='<div class="cal-ls" style="font-size:.5rem">'+day.p.lunarDay+' л.с. · '+sc.toFixed(1)+'</div>';
+    if(hasEv){if(day.goodWindows>0){h+='<div style="font-size:.5rem;color:#1e6b3d;font-weight:700;margin-top:1px">✶ '+day.goodWindows+' окн.</div>';}else{h+='<div style="font-size:.48rem;color:rgba(138,26,30,.45);margin-top:1px">— нет окон</div>';}}
+    h+='</div>';
+  });
+  h+='</div>'; // cal-grid
+  h+='<div class="cal-legend">';
+  h+='<span><span style="width:10px;height:10px;border-radius:50%;background:#1e6b3d;display:inline-block"></span>Отличная (&ge;7)</span>';
+  h+='<span><span style="width:10px;height:10px;border-radius:50%;background:#5a8a1a;display:inline-block"></span>Хорошая (5–7)</span>';
+  h+='<span><span style="width:10px;height:10px;border-radius:50%;background:#c8600a;display:inline-block"></span>Нейтральная (3–5)</span>';
+  h+='<span><span style="width:10px;height:10px;border-radius:50%;background:#8a1a1e;display:inline-block"></span>Слабая (&lt;3)</span>';
+  h+='</div>';
+  h+='<div style="font-size:.65rem;color:#9e7840;margin-top:.4rem;padding:.35rem .5rem;background:rgba(158,120,64,.07);border-radius:5px">&#9432; Цвет = общая энергия дня (накшатра + титхи). Наличие благоприятных окон зависит от Раху Кала и Гулика — кликните на день для деталей.</div>';
+  h+='</div>'; // card
+
+  // Selected day detail
+  if(S.selectedDay){
+    var sel2=days.find(function(x){return x.ds===S.selectedDay;});
+    if(sel2){
+      h+='<div class="card">';
+      h+='<div class="ct">&#128197; '+esc(fmtDate(S.selectedDay))+'</div>';
+      h+=buildDayDetailInline(sel2);
+      h+='</div>';
+    }
+  }
+  return h;
+}
+
+// --- RENDER -------------------------------------------------------------------
+function render(){
+  var scrollY=window.scrollY||window.pageYOffset||0;
+  var app=document.getElementById('muh');
+  app.innerHTML=
+    '<div class="hdr">'+
+    '<div id="muh-logo" class="hdr-logo"></div>'+
+    '<h1 class="hdr-t">Мухурта Калькулятор</h1>'+
+    '<p class="hdr-s">Ведическая астрология &middot; Панчанга &middot; Аянамша Лахири &middot; NOAA восход</p>'+
+    '</div>'+
+    buildTodayEnergy()+
+    buildStep1()+buildStep2()+buildStep3()+
+    (S.mode==='range'?buildRangeResults():S.mode==='calendar'?buildCalendar():buildSingleResults())+
+    '<div class="footer">&copy; Академия Астрология АТУМ</div>';
+  bind();
+  // Вставляем логотип из скрытого блока
+  var logoSrc = document.getElementById('muh-logo-src');
+  var logoDst = document.getElementById('muh-logo');
+  if(logoSrc && logoDst) logoDst.innerHTML = logoSrc.innerHTML;
+  window.scrollTo(0,scrollY);
+}
+
+function updateProgress(){
+  var pf=document.querySelector('#muh .prog-fill');
+  var pl=document.querySelector('#muh .btn-m[id="btnRange"]');
+  if(pf) pf.style.width=S.progress+'%';
+  var ptxt=document.querySelector('#muh .prog-wrap');
+  if(ptxt&&ptxt.previousElementSibling) ptxt.previousElementSibling.textContent='Обрабатываю... '+S.progress+'%';
+  if(pl) pl.textContent='Считаю... '+S.progress+'%';
+}
+
+// --- CALCULATIONS -------------------------------------------------------------
+function doSingle(){
+  var city=CITIES[S.cIdx];
+  var parts=S.time.split(':');
+  var lh=+parts[0]+(+parts[1])/60;
+  var p=calcP(S.date,lh,city);
+  var cs=scoreSlot(lh,p,resolveEv());
+  var slots=getDaySlots(S.date,city,resolveEv());
+  S.singleRes={p:p,cs:cs,slots:slots,city:city,ev:resolveEv(),date:S.date,time:S.time};
+  S.busy=false;
+  render();
+}
+
+function doRange(){
+  var city=CITIES[S.cIdx];
+  var ev=resolveEv();
+  var cur=new Date(S.rangeStart);
+  var end=new Date(S.rangeEnd);
+  var totalDays=Math.round((end-cur)/(86400000))+1;
+
+  var allDates=[];
+  var c2=new Date(S.rangeStart);
+  while(c2<=end){allDates.push(c2.toISOString().split('T')[0]);c2.setDate(c2.getDate()+1);}
+  var results=[];
+  var i=0;
+
+  function chunk(){
+    var end2=Math.min(i+4,allDates.length);
+    for(var j=i;j<end2;j++){
+      var ds=allDates[j];
+      var slots=getDaySlots(ds,city,ev);
+      var good=slots.filter(function(x){return !x.block&&x.s>=4;}).sort(function(a,b){return b.s-a.s;});
+      var best=good[0]||null;
+      var p2=calcP(ds,12,city);
+      var de=buildDayEnergy(p2);
+
+      // Apply advanced filters
+      var f=S.filter;
+      var pass=true;
+      if(f.tithis.length>0 && f.tithis.indexOf(p2.tIdx)<0) pass=false;
+      if(f.naks.length>0 && f.naks.indexOf(p2.nIdx)<0) pass=false;
+      if(f.varas.length>0 && f.varas.indexOf(p2.dow)<0) pass=false;
+      if(f.nakQuals.length>0 && f.nakQuals.indexOf(p2.nakshatra.quality)<0) pass=false;
+      if(f.karanas.length>0 && f.karanas.indexOf(p2.kIdx)<0) pass=false;
+      if(f.minScore>0 && de.score<f.minScore) pass=false;
+
+      results.push({dateStr:ds,dayScore:best?best.s:0,bestSlot:best,slots:slots,p:p2,passFilter:pass});
+    }
+    i=end2;
+    S.progress=Math.round(i/allDates.length*100);
+    if(i<allDates.length){
+      updateProgress();
+      setTimeout(chunk,0);
+    } else {
+      var filtered=results.filter(function(r){return r.passFilter;});
+      var sorted=filtered.slice().sort(function(a,b){return b.dayScore-a.dayScore;});
+      var all=results; // keep all for "all days" view but mark filtered
+      S.rangeRes={sorted:sorted,all:all,city:city,ev:ev,totalDays:totalDays,filtered:filtered.length<results.length};
+      S.busy=false;S.progress=0;
+      render();
+    }
+  }
+  chunk();
+}
+
+// --- BIND EVENTS -------------------------------------------------------------
+function bind(){
+  var app=document.getElementById('muh');
+
+  // Categories
+  app.querySelectorAll('[data-cat]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var id=this.getAttribute('data-cat');
+      if(S.catId===id) return;
+      S.catId=id;S.evObj=null;S.singleRes=null;S.rangeRes=null;S.selectedDay=null;
+      if(id!=='custom') S.filter={tithis:[],naks:[],varas:[],nakQuals:[],karanas:[],minScore:0};
+      render();
+    });
+  });
+
+  // Events
+  app.querySelectorAll('[data-ev]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var id=this.getAttribute('data-ev');
+      var cat=CATEGORIES.find(function(c){return c.id===S.catId;});
+      if(!cat) return;
+      S.evObj=cat.events.find(function(e){return e.id===id;})||null;
+      S.singleRes=null;S.rangeRes=null;S.selectedDay=null;
+      render();
+    });
+  });
+
+  // Mode tabs
+  app.querySelectorAll('[data-mode]').forEach(function(el){
+    el.addEventListener('click',function(){
+      S.mode=this.getAttribute('data-mode');
+      S.singleRes=null;S.rangeRes=null;S.selectedDay=null;
+      render();
+    });
+  });
+
+  // Custom builder
+  var ni=app.querySelector('#customName');
+  if(ni) ni.addEventListener('input',function(){S.custom.name=this.value;});
+
+  app.querySelectorAll('[data-quality]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var q=this.getAttribute('data-quality');
+      var idx=S.custom.qualities.indexOf(q);
+      if(idx>=0) S.custom.qualities.splice(idx,1); else S.custom.qualities.push(q);
+      S.singleRes=null;S.rangeRes=null;
+      render();
+    });
+  });
+
+  app.querySelectorAll('[data-vara]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-vara');
+      var idx=S.custom.varaGood.indexOf(v);
+      if(idx>=0) S.custom.varaGood.splice(idx,1); else S.custom.varaGood.push(v);
+      S.singleRes=null;S.rangeRes=null;
+      render();
+    });
+  });
+
+  app.querySelectorAll('[data-ctithi]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-ctithi');
+      var idx=S.custom.tithiGood.indexOf(v);
+      if(idx>=0) S.custom.tithiGood.splice(idx,1); else S.custom.tithiGood.push(v);
+      S.singleRes=null;S.rangeRes=null;
+      render();
+    });
+  });
+
+  // Energy of day tabs
+  app.querySelectorAll('[data-etab]').forEach(function(el){
+    el.addEventListener('click',function(){
+      S.todayTab=this.getAttribute('data-etab');
+      render();
+    });
+  });
+
+  // Filter toggle
+  var ft=app.querySelector('#filterToggle');
+  if(ft) ft.addEventListener('click',function(e){
+    if(e.target.id==='filterClear') return;
+    S.filterOpen=!S.filterOpen; render();
+  });
+  var fc=app.querySelector('#filterClear');
+  if(fc) fc.addEventListener('click',function(e){
+    e.stopPropagation();
+    S.filter={tithis:[],naks:[],varas:[],nakQuals:[],karanas:[],minScore:0};
+    S.rangeRes=null; render();
+  });
+
+  // Filter: nakshatra names
+  app.querySelectorAll('[data-fnak]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-fnak');
+      var idx=S.filter.naks.indexOf(v);
+      if(idx>=0) S.filter.naks.splice(idx,1); else S.filter.naks.push(v);
+      S.rangeRes=null; render();
+    });
+  });
+
+  // Filter: tithis
+  app.querySelectorAll('[data-ftithi]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-ftithi');
+      var idx=S.filter.tithis.indexOf(v);
+      if(idx>=0) S.filter.tithis.splice(idx,1); else S.filter.tithis.push(v);
+      S.rangeRes=null; render();
+    });
+  });
+
+  // Filter: varas
+  app.querySelectorAll('[data-fvara]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-fvara');
+      var idx=S.filter.varas.indexOf(v);
+      if(idx>=0) S.filter.varas.splice(idx,1); else S.filter.varas.push(v);
+      S.rangeRes=null; render();
+    });
+  });
+
+  // Filter: nakshatra quality
+  app.querySelectorAll('[data-fnakqual]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=this.getAttribute('data-fnakqual');
+      var idx=S.filter.nakQuals.indexOf(v);
+      if(idx>=0) S.filter.nakQuals.splice(idx,1); else S.filter.nakQuals.push(v);
+      S.rangeRes=null; render();
+    });
+  });
+
+  // Filter: karana
+  app.querySelectorAll('[data-fkarana]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var v=+this.getAttribute('data-fkarana');
+      var idx=S.filter.karanas.indexOf(v);
+      if(idx>=0) S.filter.karanas.splice(idx,1); else S.filter.karanas.push(v);
+      S.rangeRes=null; render();
+    });
+  });
+
+  // Filter: min score slider
+  var fms=app.querySelector('#fMinScore');
+  if(fms) fms.addEventListener('input',function(){
+    S.filter.minScore=+this.value;
+    S.rangeRes=null;
+    // Update label only, don't re-render on every tick
+    var lbl=app.querySelector('.filter-lbl strong');
+    // find the min score label
+    app.querySelectorAll('.filter-lbl').forEach(function(el){
+      if(el.textContent.indexOf('Минимальный')>=0){
+        el.innerHTML='Минимальный балл дня: <strong>'+S.filter.minScore.toFixed(1)+'</strong>';
+      }
+    });
+  });
+  if(fms) fms.addEventListener('change',function(){render();});
+
+
+  var sd=app.querySelector('#sDate');
+  if(sd) sd.addEventListener('change',function(){S.date=this.value;S.singleRes=null;});
+  var st=app.querySelector('#sTime');
+  if(st) st.addEventListener('change',function(){S.time=this.value;S.singleRes=null;});
+  var sc=app.querySelector('#sCity');
+  if(sc) sc.addEventListener('change',function(){S.cIdx=+this.value;S.singleRes=null;});
+  var sco=app.querySelector('#sCountry');
+  if(sco) sco.addEventListener('change',function(){
+    S.countryIdx=+this.value;
+    S.cIdx=CITIES.indexOf(COUNTRIES[S.countryIdx].cities[0]);
+    S.singleRes=null; render();
+  });
+
+  // Range form
+  var rs=app.querySelector('#rStart');
+  if(rs) rs.addEventListener('change',function(){S.rangeStart=this.value;S.rangeRes=null;S.selectedDay=null;});
+  var re=app.querySelector('#rEnd');
+  if(re) re.addEventListener('change',function(){S.rangeEnd=this.value;S.rangeRes=null;S.selectedDay=null;});
+  var rc=app.querySelector('#rCity');
+  if(rc) rc.addEventListener('change',function(){S.cIdx=+this.value;S.rangeRes=null;S.selectedDay=null;});
+  var rco=app.querySelector('#rCountry');
+  if(rco) rco.addEventListener('change',function(){
+    S.countryIdx=+this.value;
+    S.cIdx=CITIES.indexOf(COUNTRIES[S.countryIdx].cities[0]);
+    S.rangeRes=null;S.selectedDay=null; render();
+  });
+
+  // Presets
+  app.querySelectorAll('[data-preset]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var p=this.getAttribute('data-preset');
+      var now=new Date(),s=new Date(),e=new Date();
+      if(p==='week'){e.setDate(now.getDate()+6);}
+      else if(p==='2weeks'){e.setDate(now.getDate()+13);}
+      else if(p==='month'){s=new Date(now.getFullYear(),now.getMonth(),1);e=new Date(now.getFullYear(),now.getMonth()+1,0);}
+      else if(p==='nextmonth'){s=new Date(now.getFullYear(),now.getMonth()+1,1);e=new Date(now.getFullYear(),now.getMonth()+2,0);}
+      else if(p==='3months'){e.setDate(now.getDate()+89);}
+      S.rangeStart=s.toISOString().split('T')[0];
+      S.rangeEnd=e.toISOString().split('T')[0];
+      S.rangeRes=null;S.selectedDay=null;
+      render();
+    });
+  });
+
+  // Calc buttons
+  var btnS=app.querySelector('#btnSingle');
+  if(btnS) btnS.addEventListener('click',function(){
+    var sd2=app.querySelector('#sDate');
+    var st2=app.querySelector('#sTime');
+    var sc2=app.querySelector('#sCity');
+    var sco2=app.querySelector('#sCountry');
+    if(sd2) S.date=sd2.value;
+    if(st2) S.time=st2.value;
+    if(sco2) S.countryIdx=+sco2.value;
+    if(sc2) S.cIdx=+sc2.value;
+    S.busy=true;S.singleRes=null;
+    render();
+    setTimeout(doSingle,20);
+  });
+
+  var btnR=app.querySelector('#btnRange');
+  if(btnR) btnR.addEventListener('click',function(){
+    var rs2=app.querySelector('#rStart');
+    var re2=app.querySelector('#rEnd');
+    var rc2=app.querySelector('#rCity');
+    var rco2=app.querySelector('#rCountry');
+    if(rs2) S.rangeStart=rs2.value;
+    if(re2) S.rangeEnd=re2.value;
+    if(rco2) S.countryIdx=+rco2.value;
+    if(rc2) S.cIdx=+rc2.value;
+    S.busy=true;S.rangeRes=null;S.selectedDay=null;S.progress=0;
+    render();
+    setTimeout(doRange,20);
+  });
+
+  // Day cards
+  // Birth profile toggle
+  var bt=app.querySelector('#birthToggle');
+  if(bt) bt.addEventListener('click',function(){S.birthOpen=!S.birthOpen; render();});
+
+  // Birth fields — blur to avoid re-render while typing
+  var bDate=app.querySelector('#birthDate');
+  if(bDate) bDate.addEventListener('blur',function(){
+    S.birth.date=this.value;
+    S.birthNak=computeBirthNak();
+    render();
+  });
+  var bTime=app.querySelector('#birthTime');
+  if(bTime) bTime.addEventListener('blur',function(){
+    S.birth.time=this.value;
+    S.birthNak=computeBirthNak();
+    render();
+  });
+  var bCity=app.querySelector('#birthCity');
+  if(bCity) bCity.addEventListener('change',function(){
+    S.birth.cIdx=+this.value;
+    S.birthNak=computeBirthNak();
+    render();
+  });
+  // Slot accordion
+  app.querySelectorAll("[data-slot]").forEach(function(el){
+    el.addEventListener("click",function(e){
+      e.stopPropagation();
+      var id=this.getAttribute("data-slot");
+      S.openSlot=S.openSlot===id?null:id;
+      var sy=window.scrollY||window.pageYOffset||0;
+      render();
+      window.scrollTo(0,sy);
+    });
+  });
+
+  app.querySelectorAll('[data-caldir]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var dir=+this.getAttribute('data-caldir');
+      S.calMonth+=dir;
+      if(S.calMonth>11){S.calMonth=0;S.calYear++;}
+      if(S.calMonth<0){S.calMonth=11;S.calYear--;}
+      S.selectedDay=null;
+      render();
+    });
+  });
+
+  app.querySelectorAll('[data-day]').forEach(function(el){
+    el.addEventListener('click',function(e){
+      e.stopPropagation();
+      var d=this.getAttribute('data-day');
+      var wasSelected=S.selectedDay===d;
+      S.selectedDay=wasSelected?null:d;
+      var sy=window.scrollY||window.pageYOffset||0;
+      render();
+      // Only restore scroll if closing, not opening
+      if(wasSelected) window.scrollTo(0,sy);
+    });
+  });
+}
+
+// --- INIT ---------------------------------------------------------------------
+render();
+
+})();
+</script>
+</body>
+</html>
